@@ -46,6 +46,7 @@
     "echarts-liquidfill": "^3.1.0",
     "element-plus": "^2.3.4",
     "js-md5": "^0.7.3",
+    "laf-client-sdk": "1.0.0-beta.7",
     "mitt": "^3.0.0",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.35",
