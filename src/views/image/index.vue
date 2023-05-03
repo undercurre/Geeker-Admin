@@ -1,5 +1,13 @@
 <template>
   <div class="gallery">
+    <div class="category">
+      <div class="tab">
+        <el-check-tag :checked="true">全部</el-check-tag>
+      </div>
+      <el-button type="primary">
+        Upload<el-icon class="el-icon--right"><Upload /></el-icon>
+      </el-button>
+    </div>
     <img v-for="(image, index) in images" :key="index" :src="image" @click="showImage(index)" />
     <div v-if="showModal" class="modal" @click="closeModal">
       <img :src="selectedImage" />
@@ -8,39 +16,32 @@
 </template>
 
 <script lang="ts">
-import { ref } from "vue";
+export default { name: "Gallery" };
+</script>
 
-export default {
-  name: "Gallery",
-  setup() {
-    const images = ref<string[]>([
-      "https://via.placeholder.com/150",
-      "https://via.placeholder.com/250",
-      "https://via.placeholder.com/350",
-      "https://via.placeholder.com/450",
-      "https://via.placeholder.com/550"
-    ]);
-    const showModal = ref(false);
-    const selectedImage = ref("");
+<script lang="ts" setup>
+import { onBeforeMount, ref } from "vue";
 
-    function showImage(index: number) {
-      selectedImage.value = images.value[index];
-      showModal.value = true;
-    }
+const images = ref<string[]>([
+  "https://via.placeholder.com/150",
+  "https://via.placeholder.com/250",
+  "https://via.placeholder.com/350",
+  "https://via.placeholder.com/450",
+  "https://via.placeholder.com/550"
+]);
+const showModal = ref(false);
+const selectedImage = ref("");
 
-    function closeModal() {
-      showModal.value = false;
-    }
+function showImage(index: number) {
+  selectedImage.value = images.value[index];
+  showModal.value = true;
+}
 
-    return {
-      images,
-      showModal,
-      selectedImage,
-      showImage,
-      closeModal
-    };
-  }
-};
+function closeModal() {
+  showModal.value = false;
+}
+
+onBeforeMount(() => {});
 </script>
 
 <style scoped>
@@ -67,5 +68,10 @@ export default {
   max-width: 90%;
   max-height: 90%;
   border-radius: 5px;
+}
+.category {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
 }
 </style>
