@@ -87,4 +87,9 @@ export namespace User {
     name: string;
     children?: ResDepartment[];
   }
+
+  export interface ResProfile {
+    userId: number;
+    username: string;
+  }
 }

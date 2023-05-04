@@ -3,20 +3,6 @@
   "data": [
     {
       "path": "/home/index",
-      "name": "home",
-      "component": "/home/index",
-      "meta": {
-        "icon": "Histogram",
-        "title": "数据分析",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": true,
-        "isKeepAlive": true
-      }
-    },
-    {
-      "path": "/image/index",
       "name": "image",
       "component": "/image/index",
       "meta": {

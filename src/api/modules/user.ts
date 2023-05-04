@@ -69,3 +69,8 @@ export const getUserDepartment = () => {
 export const getUserRole = () => {
   return http.get<User.ResRole>(PORT1 + `/user/role`);
 };
+
+// 获取用户角色信息
+export const getUserProfile = () => {
+  return http.get<User.ResProfile>("/profile");
+};
