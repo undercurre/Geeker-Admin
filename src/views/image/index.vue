@@ -8,7 +8,7 @@
         Upload<el-icon class="el-icon--right"><Upload /></el-icon>
       </el-button>
     </div>
-    <img v-for="(image, index) in images" :key="index" :src="image" @click="showImage(index)" />
+    <img class="image" v-for="(image, index) in images" :key="index" :src="image" @click="showImage(index)" />
     <div v-if="showModal" class="modal" @click="closeModal">
       <img :src="selectedImage" />
     </div>
@@ -20,15 +20,13 @@ export default { name: "Gallery" };
 </script>
 
 <script lang="ts" setup>
+import { getImageForUser } from "@/api/modules/image";
 import { onBeforeMount, ref } from "vue";
+import { useUserStore } from "@/stores/modules/user";
 
-const images = ref<string[]>([
-  "https://via.placeholder.com/150",
-  "https://via.placeholder.com/250",
-  "https://via.placeholder.com/350",
-  "https://via.placeholder.com/450",
-  "https://via.placeholder.com/550"
-]);
+const userStore = useUserStore();
+
+const images = ref<string[]>([]);
 const showModal = ref(false);
 const selectedImage = ref("");
 
@@ -41,13 +39,20 @@ function closeModal() {
   showModal.value = false;
 }
 
-onBeforeMount(() => {});
+onBeforeMount(async () => {
+  const { data } = await getImageForUser({ id: userStore.userInfo.userId });
+  images.value = data.map(item => item.image_url);
+});
 </script>
 
 <style scoped>
 .gallery {
   display: flex;
   flex-wrap: wrap;
+}
+.image {
+  width: 250px;
+  height: 250px;
 }
 .gallery img {
   margin: 10px;
