@@ -68,7 +68,7 @@ export default { name: "Gallery" };
 import { getImageForUser } from "@/api/modules/image";
 import { onBeforeMount, reactive, ref } from "vue";
 import { useUserStore } from "@/stores/modules/user";
-import { UploadUserFile, genFileId } from "element-plus";
+import { ElMessage, UploadUserFile, genFileId } from "element-plus";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { uploadImage } from "@/api/modules/image";
 
@@ -102,13 +102,23 @@ function closeModal() {
 // 上传图片
 const uploadDialogVisible = ref(false);
 
-const handleUpload = () => {
+const handleUpload = async () => {
   const formData = new FormData();
   formData.append("name", form.name);
   formData.append("user_id", form.user_id.toString());
   formData.append("description", form.description);
   formData.append("file", form.file as Blob);
-  uploadImage(formData);
+  const res = await uploadImage(formData);
+  if (res.code) {
+    ElMessage({
+      message: "上传成功",
+      type: "success"
+    });
+    uploadDialogVisible.value = false;
+    getData();
+  } else {
+    ElMessage.error("上传失败");
+  }
 };
 
 const upload = ref<UploadInstance>();
@@ -123,7 +133,6 @@ const handleExceed: UploadProps["onExceed"] = files => {
 };
 
 const handleChange: UploadProps["onChange"] = (uploadFile, uploadFiles) => {
-  console.log(uploadFile);
   form.file = uploadFile.raw as File;
   fileList.value = [
     {
@@ -141,9 +150,13 @@ const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
   dialogVisible.value = true;
 };
 
-onBeforeMount(async () => {
+async function getData() {
   const { data } = await getImageForUser({ id: userStore.userInfo.userId });
   images.value = data.map(item => item.image_url);
+}
+
+onBeforeMount(async () => {
+  getData();
 });
 </script>
 
