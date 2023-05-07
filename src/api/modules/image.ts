@@ -8,3 +8,7 @@ import { Image } from "@/api/interface/index";
 export const getImageForUser = (params: { id: number }) => {
   return http.get<Array<Image.ResImagesForUser>>("images/fineOneByUser", params);
 };
+
+export const uploadImage = (params: FormData) => {
+  return http.post("images/create", params);
+};
