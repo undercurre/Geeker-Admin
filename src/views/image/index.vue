@@ -8,9 +8,13 @@
         Upload<el-icon class="el-icon--right"><Upload /></el-icon>
       </el-button>
     </div>
-    <img class="display_image" v-for="(image, index) in images" :key="index" :src="image" @click="showImage(index)" />
+    <img class="display_image" v-for="(image, index) in images" :key="index" :src="image.image_url" @click="showImage(image)" />
     <div v-if="showModal" class="modal" @click="closeModal">
-      <img :src="selectedImage" />
+      <img class="expandImage" :src="selectedImage?.image_url" />
+      <div class="expandText">
+        <text class="name">name: {{ selectedImage?.name }}</text>
+        <text class="description">description: {{ selectedImage?.description }}</text>
+      </div>
     </div>
     <el-dialog v-model="uploadDialogVisible" title="上传图片">
       <el-form :model="form" label-width="120px">
@@ -86,12 +90,35 @@ const form = reactive<{
   file: null
 });
 
-const images = ref<string[]>([]);
+const images = ref<
+  Array<{
+    id: number;
+    name: string;
+    description: string;
+    upload_time: string;
+    user_id: number;
+    image_url: string;
+  }>
+>([]);
 const showModal = ref(false);
-const selectedImage = ref("");
+const selectedImage = ref<{
+  id: number;
+  name: string;
+  description: string;
+  upload_time: string;
+  user_id: number;
+  image_url: string;
+}>();
 
-function showImage(index: number) {
-  selectedImage.value = images.value[index];
+function showImage(image: {
+  id: number;
+  name: string;
+  description: string;
+  upload_time: string;
+  user_id: number;
+  image_url: string;
+}) {
+  selectedImage.value = image;
   showModal.value = true;
 }
 
@@ -152,7 +179,7 @@ const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
 
 async function getData() {
   const { data } = await getImageForUser({ id: userStore.userInfo.userId });
-  images.value = data.map(item => item.image_url);
+  images.value = data;
 }
 
 onBeforeMount(async () => {
@@ -196,5 +223,24 @@ onBeforeMount(async () => {
   box-sizing: border-box;
   width: 100%;
   padding: 32px;
+}
+.expandImage {
+  position: relative;
+}
+.expandText {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.name {
+  font-size: 22px;
+  color: #f3f3f3;
+}
+.description {
+  font-size: 16px;
+  color: #dddddd;
 }
 </style>
