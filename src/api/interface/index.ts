@@ -56,18 +56,14 @@ export namespace User {
     status: number;
   }
   export interface ResUserList {
-    id: string;
+    id: number;
     username: string;
-    gender: number;
-    user: { detail: { age: number } };
-    idCard: string;
-    email: string;
-    address: string;
-    createTime: string;
-    status: number;
-    avatar: string;
-    photo: any[];
-    children?: ResUserList[];
+    openid: string;
+    session_key: string;
+    unionid: string;
+    access_token: string;
+    expires_in: string;
+    phone: string;
   }
   export interface ResStatus {
     userLabel: string;

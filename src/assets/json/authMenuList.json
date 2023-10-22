@@ -2,6 +2,20 @@
   "code": 200,
   "data": [
     {
+      "path": "/user/index",
+      "name": "user",
+      "component": "/user/index",
+      "meta": {
+        "icon": "UserFilled",
+        "title": "用户管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": true,
+        "isKeepAlive": true
+      }
+    },
+    {
       "path": "/home/index",
       "name": "image",
       "component": "/image/index",
