@@ -12,11 +12,25 @@
       </template>
     </el-table-column>
   </el-table>
+
+  <el-dialog v-model="dialogVisible" :title="opearationType ? 'User Edit' : 'User Add'" width="30%" :before-close="handleClose">
+    <el-form :model="form" label-width="120px">
+      <el-form-item label="Activity name">
+        <el-input v-model="form.username" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogVisible = false"> Confirm </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, onMounted } from "vue";
-import { getUserList } from "@/api/modules/user";
+import { computed, ref, onMounted, reactive } from "vue";
+import { deleteUser, getUserList } from "@/api/modules/user";
 import { User } from "@/api/interface";
 
 interface User {
@@ -32,11 +46,33 @@ const search = ref("");
 const filterTableData = computed(() =>
   users.value.filter(data => !search.value || data.username.toLowerCase().includes(search.value.toLowerCase()))
 );
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row);
+
+// dialog
+const opearationType = ref("add");
+
+const dialogVisible = ref(false);
+
+let form = reactive<User.ResUserList>({
+  id: 0,
+  username: "",
+  openid: "",
+  session_key: "",
+  unionid: "",
+  access_token: "",
+  expires_in: "",
+  phone: ""
+});
+
+const handleClose = (done: () => void) => {
+  done();
 };
-const handleDelete = (index: number, row: User) => {
-  console.log(index, row);
+
+const handleEdit = (index: number, row: User.ResUserList) => {
+  dialogVisible.value = true;
+  form = row;
+};
+const handleDelete = (index: number, row: User.ResUserList) => {
+  deleteUser({ id: row.id });
 };
 
 onMounted(async () => {
@@ -44,3 +80,9 @@ onMounted(async () => {
   users.value = res.data;
 });
 </script>
+
+<style scoped>
+.dialog-footer button:first-child {
+  margin-right: 10px;
+}
+</style>
