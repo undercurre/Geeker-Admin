@@ -95,7 +95,7 @@ export namespace User {
   }
 
   export interface ResProfile {
-    userId: number;
+    id: number;
     username: string;
   }
 }
