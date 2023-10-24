@@ -55,7 +55,12 @@ export namespace User {
     createTime: string[];
     status: number;
   }
-  export interface ResUserList {
+
+  export type UserParams = {
+    [K in keyof ResUserItem]?: ResUserItem[K];
+  };
+
+  export interface ResUserItem {
     id: number;
     username: string;
     openid: string;
@@ -65,6 +70,11 @@ export namespace User {
     expires_in: string;
     phone: string;
   }
+
+  export interface AddUserItem extends ResUserItem {
+    password: string;
+  }
+
   export interface ResStatus {
     userLabel: string;
     userValue: number;
