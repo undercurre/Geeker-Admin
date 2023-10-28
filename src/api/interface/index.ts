@@ -71,6 +71,10 @@ export namespace User {
     phone: string;
   }
 
+  export interface ResUserItemAdd extends ResUserItem {
+    password: string;
+  }
+
   export interface AddUserItem extends ResUserItem {
     password: string;
   }

@@ -58,6 +58,7 @@ class RequestHttp {
         tryHideFullScreenLoading();
         // 登陆失效
         if (data.code == ResultEnum.OVERDUE) {
+          console.log("响应登陆失效");
           userStore.setToken("");
           router.replace(LOGIN_URL);
           ElMessage.error(data.msg);

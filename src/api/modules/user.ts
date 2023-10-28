@@ -1,6 +1,7 @@
 import { ResPage, User } from "@/api/interface/index";
 import { PORT1 } from "@/api/config/servicePort";
 import http from "@/api";
+import md5 from "js-md5";
 
 /**
  * @name 用户管理模块
@@ -16,7 +17,8 @@ export const getUserTreeList = (params: User.ReqUserParams) => {
 };
 
 // 新增用户
-export const addUser = (params: User.ResUserItem) => {
+export const addUser = (params: User.ResUserItemAdd) => {
+  params.password = md5(params.password);
   return http.post(PORT1 + `/users/create`, params);
 };
 

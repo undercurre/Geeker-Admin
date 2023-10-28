@@ -2,12 +2,12 @@
   "code": 200,
   "data": [
     {
-      "path": "/user/index",
-      "name": "user",
-      "component": "/user/index",
+      "path": "/home/index",
+      "name": "home",
+      "component": "/home/index",
       "meta": {
-        "icon": "UserFilled",
-        "title": "用户管理",
+        "icon": "HomeFilled",
+        "title": "首页",
         "isLink": "",
         "isHide": false,
         "isFull": false,
@@ -16,8 +16,22 @@
       }
     },
     {
-      "path": "/home/index",
-      "name": "image",
+      "path": "/userManager",
+      "name": "userManager",
+      "component": "/user/index",
+      "meta": {
+        "icon": "UserFilled",
+        "title": "用户管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/imageManager",
+      "name": "imageManager",
       "component": "/image/index",
       "meta": {
         "icon": "PictureFilled",
@@ -25,7 +39,7 @@
         "isLink": "",
         "isHide": false,
         "isFull": false,
-        "isAffix": true,
+        "isAffix": false,
         "isKeepAlive": true
       }
     }
