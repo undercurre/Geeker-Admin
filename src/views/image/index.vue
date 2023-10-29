@@ -84,7 +84,7 @@ const form = reactive<{
   description: string;
   file: File | null;
 }>({
-  user_id: userStore.userInfo.userId,
+  user_id: userStore.userInfo.id,
   name: "",
   description: "",
   file: null
@@ -178,7 +178,7 @@ const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
 };
 
 async function getData() {
-  const { data } = await getImageForUser({ id: userStore.userInfo.userId });
+  const { data } = await getImageForUser({ id: userStore.userInfo.id });
   images.value = data;
 }
 
@@ -220,6 +220,7 @@ onBeforeMount(async () => {
   width: 100%;
 }
 .expand {
+  z-index: 9999;
   box-sizing: border-box;
   width: 100%;
   padding: 32px;
