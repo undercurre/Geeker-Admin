@@ -30,12 +30,12 @@
       }
     },
     {
-      "path": "/imageManager",
-      "name": "imageManager",
-      "component": "/image/index",
+      "path": "/taskManager",
+      "name": "taskManager",
+      "component": "/task/index",
       "meta": {
-        "icon": "PictureFilled",
-        "title": "图片仓库",
+        "icon": "Promotion",
+        "title": "任务管理",
         "isLink": "",
         "isHide": false,
         "isFull": false,
