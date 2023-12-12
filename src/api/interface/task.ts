@@ -16,5 +16,5 @@ export declare namespace Task {
     userId: string;
   }
 
-  // export interface ResTaskByUser {}
+  export type ResTaskByUser = Array<Entity>;
 }

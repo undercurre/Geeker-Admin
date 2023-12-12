@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-import { User } from "@/api/interface";
+import { User } from "@/api/interface/user";
 import { addUser, deleteUser, editUser, getUserList } from "@/api/modules/user";
 import { computed, onMounted, reactive, ref } from "vue";
 
