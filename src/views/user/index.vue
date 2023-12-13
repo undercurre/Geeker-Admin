@@ -10,7 +10,6 @@
       >
     </div>
     <el-table :data="filterTableData" style="width: 100%">
-      <el-table-column label="ID" prop="id" />
       <el-table-column label="Name" prop="username" />
       <el-table-column align="right">
         <template #header>

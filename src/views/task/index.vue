@@ -10,8 +10,9 @@
       >
     </div>
     <el-table :data="filterTableData" style="width: 100%">
-      <el-table-column label="ID" prop="id" />
       <el-table-column label="Title" prop="title" />
+      <el-table-column label="Status" prop="status" />
+      <el-table-column label="Deadline" prop="due_date" />
       <el-table-column align="right">
         <template #header>
           <el-input v-model="search" size="small" placeholder="Search Title" />
@@ -91,7 +92,7 @@ let addForm = reactive<Task.ReqAddData>({
   description: "",
   status: "Todo",
   priority: 1,
-  due_date: moment(new Date()).format("YYYY-MM-DD")
+  due_date: moment(new Date()).add(1, "days").format("YYYY-MM-DD")
 });
 
 let editId: Task.Entity["id"] = "";
@@ -99,15 +100,15 @@ let editId: Task.Entity["id"] = "";
 let editForm = reactive<Task.ReqUpdateData>({});
 
 const resetForm = () => {
-  addForm = {
+  addForm = reactive<Task.ReqAddData>({
     title: "",
     description: "",
     status: "Todo",
     priority: 1,
-    due_date: moment(new Date()).format("YYYY-MM-DD")
-  };
+    due_date: moment(new Date()).add(1, "days").format("YYYY-MM-DD")
+  });
 
-  editForm = {};
+  editForm = reactive<Task.ReqUpdateData>({});
 };
 
 const handleAdd = () => {
