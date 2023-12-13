@@ -12,9 +12,11 @@ export declare namespace Task {
     user_id: string;
   };
 
-  export interface ReqTaskByUserParams {
-    userId: string;
-  }
+  export type ReqAddData = Omit<Entity, "id" | "created_at" | "updated_at" | "user_id">;
 
-  export type ResTaskByUser = Array<Entity>;
+  export type ReqUpdateData = Partial<Omit<Entity, "id" | "created_at" | "updated_at" | "user_id">>;
+
+  export interface DeleteParams {
+    id: Entity["id"];
+  }
 }

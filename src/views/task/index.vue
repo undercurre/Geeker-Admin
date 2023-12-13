@@ -11,10 +11,10 @@
     </div>
     <el-table :data="filterTableData" style="width: 100%">
       <el-table-column label="ID" prop="id" />
-      <el-table-column label="Name" prop="username" />
+      <el-table-column label="Title" prop="title" />
       <el-table-column align="right">
         <template #header>
-          <el-input v-model="search" size="small" placeholder="Search Name" />
+          <el-input v-model="search" size="small" placeholder="Search Title" />
         </template>
         <template #default="scope">
           <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
@@ -24,17 +24,14 @@
     </el-table>
 
     <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'User Edit' : 'User Add'" width="30%">
-      <el-form v-show="opearationType === 'add'" :model="addForm" label-width="120px">
-        <el-form-item label="User name">
-          <el-input v-model="addForm.username" />
-        </el-form-item>
-        <el-form-item label="User password">
-          <el-input v-model="addForm.password" />
+      <el-form v-show="opearationType === 'edit'" :model="editForm" label-width="120px">
+        <el-form-item label="Task Title">
+          <el-input v-model="editForm.title" />
         </el-form-item>
       </el-form>
-      <el-form v-show="opearationType === 'edit'" :model="editForm" label-width="120px">
-        <el-form-item label="User name">
-          <el-input v-model="editForm.username" />
+      <el-form v-show="opearationType === 'add'" :model="addForm" label-width="120px">
+        <el-form-item label="Task Title">
+          <el-input v-model="addForm.title" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -48,11 +45,12 @@
 </template>
 
 <script lang="ts" setup>
-import { User } from "@/api/interface";
-import { addUser, deleteUser, editUser, getUserList } from "@/api/modules/user";
+import moment from "moment";
+import { Task } from "@/api/interface/task";
+import { getTaskListByUser, addTask, editTask, deleteTask } from "@/api/modules/task";
 import { computed, onMounted, reactive, ref } from "vue";
 
-const users = ref<Array<User.ResUserItem>>([]);
+const tasks = ref<Array<Task.Entity>>([]);
 
 const opearationType = ref("add");
 
@@ -61,82 +59,64 @@ const dialogVisible = ref(false);
 const search = ref("");
 
 const filterTableData = computed(() =>
-  users.value.filter(data => !search.value || data.username.toLowerCase().includes(search.value.toLowerCase()))
+  tasks.value.filter(data => !search.value || data.title.toLowerCase().includes(search.value.toLowerCase()))
 );
 
-let addForm = reactive<User.AddUserItem>({
-  id: 0,
-  username: "",
-  password: "",
-  openid: "",
-  session_key: "",
-  unionid: "",
-  access_token: "",
-  expires_in: "",
-  phone: ""
+let addForm = reactive<Task.ReqAddData>({
+  title: "",
+  description: "",
+  status: "Todo",
+  priority: 1,
+  due_date: moment(new Date()).format("YYYY-MM-DD")
 });
 
-let editForm = reactive<User.ResUserItem>({
-  id: 0,
-  username: "",
-  openid: "",
-  session_key: "",
-  unionid: "",
-  access_token: "",
-  expires_in: "",
-  phone: ""
-});
+let editId: Task.Entity["id"] = "";
+
+let editForm = reactive<Task.ReqUpdateData>({});
+
+const resetForm = () => {
+  addForm = {
+    title: "",
+    description: "",
+    status: "Todo",
+    priority: 1,
+    due_date: moment(new Date()).format("YYYY-MM-DD")
+  };
+
+  editForm = {};
+};
 
 const handleAdd = () => {
   dialogVisible.value = true;
   opearationType.value = "add";
 };
 
-const handleEdit = (index: number, row: User.ResUserItem) => {
+const handleEdit = (index: number, row: Task.Entity) => {
   dialogVisible.value = true;
+  editId = row.id;
   editForm = row;
   opearationType.value = "edit";
 };
 
 async function submit() {
   if (opearationType.value === "edit") {
-    await editUser(editForm);
-    editForm = {
-      id: 0,
-      username: "",
-      openid: "",
-      session_key: "",
-      unionid: "",
-      access_token: "",
-      expires_in: "",
-      phone: ""
-    };
+    await editTask(editId, editForm);
   } else {
-    await addUser(addForm);
-    addForm = {
-      id: 0,
-      username: "",
-      password: "",
-      openid: "",
-      session_key: "",
-      unionid: "",
-      access_token: "",
-      expires_in: "",
-      phone: ""
-    };
+    await addTask(addForm);
   }
+  resetForm();
   dialogVisible.value = false;
   refreshMethod();
 }
 
-const handleDelete = async (index: number, row: User.ResUserItem) => {
-  await deleteUser({ id: row.id });
+const handleDelete = async (index: number, row: Task.Entity) => {
+  await deleteTask({ id: row.id });
   refreshMethod();
 };
 
 const refreshMethod = async () => {
-  const res = await getUserList();
-  users.value = res.data;
+  const res = await getTaskListByUser();
+  tasks.value = res.data;
 };
 
 onMounted(() => {

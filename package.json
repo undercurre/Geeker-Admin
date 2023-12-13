@@ -50,6 +50,7 @@
     "js-md5": "^0.7.3",
     "laf-client-sdk": "1.0.0-beta.7",
     "mitt": "^3.0.0",
+    "moment": "^2.29.4",
     "nprogress": "^0.2.0",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
