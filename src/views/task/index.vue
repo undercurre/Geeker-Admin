@@ -23,15 +23,39 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'User Edit' : 'User Add'" width="30%">
+    <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'Task Edit' : 'Task Add'" width="50%">
       <el-form v-show="opearationType === 'edit'" :model="editForm" label-width="120px">
         <el-form-item label="Task Title">
           <el-input v-model="editForm.title" />
+        </el-form-item>
+        <el-form-item label="Task Description">
+          <el-input type="textarea" v-model="editForm.description" />
+        </el-form-item>
+        <el-form-item label="Task Status">
+          <el-switch :value="editForm.status === 'Done'" @change="handleTaskStatusChange" />
+        </el-form-item>
+        <el-form-item label="Task Priority">
+          <el-input-number v-model="editForm.priority" :min="1" :max="10" />
+        </el-form-item>
+        <el-form-item label="Task DueDate">
+          <el-date-picker v-model="editForm.due_date" value-format="YYYY-MM-DD" type="date" placeholder="Pick a day" />
         </el-form-item>
       </el-form>
       <el-form v-show="opearationType === 'add'" :model="addForm" label-width="120px">
         <el-form-item label="Task Title">
           <el-input v-model="addForm.title" />
+        </el-form-item>
+        <el-form-item label="Task Description">
+          <el-input type="textarea" v-model="addForm.description" />
+        </el-form-item>
+        <el-form-item label="Task Status">
+          <el-switch :value="addForm.status === 'Done'" @change="handleTaskStatusChange" />
+        </el-form-item>
+        <el-form-item label="Task Priority">
+          <el-input-number v-model="addForm.priority" :min="1" :max="10" />
+        </el-form-item>
+        <el-form-item label="Task DueDate">
+          <el-date-picker v-model="addForm.due_date" value-format="YYYY-MM-DD" type="date" placeholder="Pick a day" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -117,6 +141,22 @@ const handleDelete = async (index: number, row: Task.Entity) => {
 const refreshMethod = async () => {
   const res = await getTaskListByUser();
   tasks.value = res.data;
+};
+
+const handleTaskStatusChange = () => {
+  if (opearationType.value === "edit") {
+    if (editForm.status === "Todo") {
+      editForm.status = "Done";
+    } else {
+      editForm.status = "In Progress";
+    }
+  } else {
+    if (addForm.status === "Todo") {
+      addForm.status = "Done";
+    } else {
+      addForm.status = "In Progress";
+    }
+  }
 };
 
 onMounted(() => {
