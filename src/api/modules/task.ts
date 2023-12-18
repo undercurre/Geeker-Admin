@@ -7,8 +7,16 @@ import http from "@/api";
  */
 
 // 获取用户的任务列表
-export const getTaskListByUser = () => {
-  return http.get<Array<Task.Entity>>(PORT1 + `/tasks/findByUserId`);
+export const getTaskListByUser = (conditions?: Partial<Task.Entity>) => {
+  if (conditions) {
+    const query = Object.keys(conditions)
+      .map(item => `${item}=${(conditions as Record<string, number | string>)[item]}`)
+      .join("&");
+    console.log(query);
+    return http.get<Array<Task.Entity>>(PORT1 + `/tasks/findByUserId?${query}`);
+  } else {
+    return http.get<Array<Task.Entity>>(PORT1 + `/tasks/findByUserId`);
+  }
 };
 
 // 新增任务

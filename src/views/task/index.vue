@@ -2,9 +2,20 @@
   <div class="bg-#fff">
     <p class="leading-30px text-20px px-10px pt-20px">任务管理</p>
     <div class="w-full flex justify-between items-center p-10px">
-      <el-button type="primary" @click="handleAdd"
-        ><el-icon><Plus /></el-icon>添加</el-button
-      >
+      <div>
+        <el-button type="primary" @click="handleAdd"
+          ><el-icon><Plus /></el-icon>添加</el-button
+        >
+        <el-date-picker
+          class="ml-20px"
+          v-model="searchDate"
+          value-format="YYYY-MM-DD"
+          type="date"
+          placeholder="Pick a day"
+          size="default"
+          @change="searchByDate"
+        />
+      </div>
       <el-button type="primary" @click="refreshMethod"
         ><el-icon><RefreshRight /></el-icon>刷新表格</el-button
       >
@@ -83,6 +94,10 @@ const dialogVisible = ref(false);
 
 const search = ref("");
 
+const searchDate = ref("");
+
+searchDate.value = moment(new Date()).format("YYYY-MM-DD");
+
 const filterTableData = computed(() =>
   tasks.value.filter(data => !search.value || data.title.toLowerCase().includes(search.value.toLowerCase()))
 );
@@ -140,7 +155,16 @@ const handleDelete = async (index: number, row: Task.Entity) => {
 };
 
 const refreshMethod = async () => {
-  const res = await getTaskListByUser();
+  const res = await getTaskListByUser({
+    due_date: searchDate.value
+  });
+  tasks.value = res.data;
+};
+
+const searchByDate = async () => {
+  const res = await getTaskListByUser({
+    due_date: searchDate.value
+  });
   tasks.value = res.data;
 };
 
