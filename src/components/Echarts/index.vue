@@ -34,6 +34,7 @@ const chartInstance = ref<EChartsType>();
 
 const draw = () => {
   if (chartInstance.value) {
+    console.log("draw表", props.option);
     chartInstance.value.setOption(props.option, { notMerge: true });
   }
 };

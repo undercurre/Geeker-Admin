@@ -11,7 +11,7 @@ export declare namespace Statistics {
         contributionsCollection: {
           contributionCalendar: {
             totalContributions: number;
-            week: [
+            weeks: [
               {
                 contributionDays: GContribution[];
               }
