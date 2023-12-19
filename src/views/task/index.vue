@@ -170,7 +170,7 @@ const searchByDate = async () => {
 
 const handleTaskStatusChange = () => {
   if (opearationType.value === "edit") {
-    if (editForm.status === "Todo") {
+    if (editForm.status === "Todo" || editForm.status === "In Progress") {
       editForm.status = "Done";
     } else {
       editForm.status = "In Progress";
