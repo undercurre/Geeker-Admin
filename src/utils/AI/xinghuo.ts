@@ -1,8 +1,6 @@
 import * as base64 from "base-64";
 import CryptoJs from "crypto-js";
 
-const WebSocket = require("ws");
-
 const config = {
   APPID: "1288b463",
   APISecret: "YjExNmM2ODAyMmEyNzU1ZTVlMDFhNDJj",
@@ -19,9 +17,8 @@ export async function sendMsg(text: string, callback: (error: Error | null, resu
   const socket = new WebSocket(myUrl as string);
   // 本次对话的完整回答的存储
   let tres = "";
-  console.log("socket", socket.active);
   // 监听websocket的各阶段事件 并做相应处理
-  socket.on("open", () => {
+  socket.addEventListener("open", () => {
     console.log("开启连接！！");
     // 发送消息
     const params = {
@@ -52,8 +49,8 @@ export async function sendMsg(text: string, callback: (error: Error | null, resu
     console.log("发送消息");
     socket.send(JSON.stringify(params));
   });
-  socket.on("message", (event: any) => {
-    const data = JSON.parse(event);
+  socket.addEventListener("message", event => {
+    const data = JSON.parse(event.data);
     console.log("收到消息！！", data);
     config.sparkResult += data.payload.choices.text[0].content;
     tres += data.payload.choices.text[0].content;
@@ -73,7 +70,7 @@ export async function sendMsg(text: string, callback: (error: Error | null, resu
       }
     }
   });
-  socket.on("close", () => {
+  socket.addEventListener("close", () => {
     console.log("连接关闭！！");
     console.log("本次回答", tres);
     callback(null, tres);
@@ -83,7 +80,7 @@ export async function sendMsg(text: string, callback: (error: Error | null, resu
   });
 
   // 处理连接错误
-  socket.on("error", () => {
+  socket.addEventListener("error", () => {
     console.error("连接错误:");
   });
 }
