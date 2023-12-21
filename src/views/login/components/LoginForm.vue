@@ -39,6 +39,7 @@ import { CircleClose, UserFilled } from "@element-plus/icons-vue";
 import type { ElForm } from "element-plus";
 import md5 from "js-md5";
 import { getUserProfile } from "@/api/modules/user";
+import { initDynamicRouter } from "@/routers/modules/dynamicRouter";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -73,7 +74,7 @@ const login = (formEl: FormInstance | undefined) => {
       userStore.setUserInfo(profileRes.data);
 
       // 2.添加动态路由
-      // await initDynamicRouter();
+      await initDynamicRouter();
 
       // 3.清空 tabs、keepAlive 数据
       tabsStore.closeMultipleTab();
