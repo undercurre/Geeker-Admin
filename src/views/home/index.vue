@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full h-full">
+  <div class="w-full h-full flex">
     <el-card shadow="always" class="w-1/2">
       <div>
         <el-text class="mx-1" type="primary">
@@ -13,7 +13,7 @@
       </el-text>
       <el-rate v-model="computedTask" :max="todayTasks.length" :colors="rateColors" text-color="#ff9900" disabled></el-rate>
     </el-card>
-    <div class="w-1/2 h-1/2 mt-10px card content-box">
+    <div class="w-1/2 h-1/2 ml-10px card content-box">
       <ECharts ref="lineChart" :option="option" />
     </div>
   </div>
@@ -29,6 +29,7 @@ import { getGithubContributions } from "@/api/modules/statistics";
 import { Statistics } from "@/api/interface/statistics";
 import { getTaskListByUser } from "@/api/modules/task";
 import { Task } from "@/api/interface/task";
+import { sendMsg } from "@/utils/AI/xinghuo";
 
 const lineChart = ref<ReturnType<typeof ECharts>>(null);
 
@@ -106,9 +107,18 @@ async function generateTaskInShortToday() {
   todayTasks.value = tasks.value.filter(item => item.due_date === moment(new Date()).format("YYYY-MM-DD"));
 }
 
+const AI = ref("");
+
+// const promte = ``;
+
 onMounted(async () => {
   drawContribution();
   generateTaskInShortToday();
+  sendMsg("", (err, res) => {
+    if (!err) {
+      AI.value = res;
+    }
+  });
 });
 </script>
 
