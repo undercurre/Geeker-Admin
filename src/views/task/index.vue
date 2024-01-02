@@ -20,10 +20,16 @@
         ><el-icon><RefreshRight /></el-icon>刷新表格</el-button
       >
     </div>
-    <el-table :data="filterTableData" style="width: 100%">
+    <el-table
+      ref="taskTable"
+      :data="filterTableData"
+      style="width: 100%"
+      :default-sort="{ prop: 'updated_at', order: 'ascending' }"
+    >
       <el-table-column label="Title" prop="title" />
       <el-table-column label="Status" prop="status" />
       <el-table-column label="Deadline" prop="due_date" />
+      <el-table-column label="Updated" prop="updated_at" sortable :formatter="timeFormatter" :sort-orders="['ascending']" />
       <el-table-column align="right">
         <template #header>
           <el-input v-model="search" size="small" placeholder="Search Title" />
@@ -83,10 +89,13 @@
 <script lang="ts" setup>
 import moment from "moment";
 import { Task } from "@/api/interface/task";
+import { ElTable } from "element-plus";
 import { getTaskListByUser, addTask, editTask, deleteTask } from "@/api/modules/task";
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, reactive, ref } from "vue";
 
 const tasks = ref<Array<Task.Entity>>([]);
+
+const taskTable = ref<InstanceType<typeof ElTable> | null>(null);
 
 const opearationType = ref("add");
 
@@ -159,6 +168,8 @@ const refreshMethod = async () => {
     due_date: searchDate.value
   });
   tasks.value = res.data;
+  await nextTick();
+  taskTable.value?.sort("updated_at", "ascending");
 };
 
 const searchByDate = async () => {
@@ -166,6 +177,12 @@ const searchByDate = async () => {
     due_date: searchDate.value
   });
   tasks.value = res.data;
+  await nextTick();
+  taskTable.value?.sort("updated_at", "ascending");
+};
+
+const timeFormatter = (row: Task.Entity) => {
+  return moment(row.updated_at).format("YYYY-MM-DD hh:mm:ss");
 };
 
 const handleTaskStatusChange = () => {
