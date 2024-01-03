@@ -42,6 +42,104 @@
         "isAffix": false,
         "isKeepAlive": true
       }
+    },
+    {
+      "path": "/activityManager",
+      "name": "activityManager",
+      "component": "/activity/index",
+      "meta": {
+        "icon": "Clock",
+        "title": "活动管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/dietManager",
+      "name": "dietManager",
+      "component": "/diet/index",
+      "meta": {
+        "icon": "Dish",
+        "title": "饮食管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/exerciseManager",
+      "name": "exerciseManager",
+      "component": "/exercise/index",
+      "meta": {
+        "icon": "Basketball",
+        "title": "运动管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/gameManager",
+      "name": "gameManager",
+      "component": "/game/index",
+      "meta": {
+        "icon": "Coin",
+        "title": "娱乐管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/imageManager",
+      "name": "imageManager",
+      "component": "/image/index",
+      "meta": {
+        "icon": "Picture",
+        "title": "照片管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/resourceManager",
+      "name": "resourceManager",
+      "component": "/resource/index",
+      "meta": {
+        "icon": "Money",
+        "title": "资源管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
+      "path": "/sleepManager",
+      "name": "sleepManager",
+      "component": "/sleep/index",
+      "meta": {
+        "icon": "Cherry",
+        "title": "睡眠管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
     }
   ],
   "msg": "成功"
