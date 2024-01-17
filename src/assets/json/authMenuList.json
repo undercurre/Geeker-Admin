@@ -170,8 +170,22 @@
           }
         },
         {
+          "path": "/study/do",
+          "name": "do",
+          "component": "/study/do/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "勤劳做题",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
           "path": "/study/record",
-          "name": "question",
+          "name": "record",
           "component": "/study/record/index",
           "meta": {
             "icon": "Menu",
@@ -184,22 +198,8 @@
           }
         },
         {
-          "path": "/study/do",
-          "name": "question",
-          "component": "/study/do/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "做题",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
           "path": "/study/analysis",
-          "name": "question",
+          "name": "analysis",
           "component": "/study/analysis/index",
           "meta": {
             "icon": "Menu",
