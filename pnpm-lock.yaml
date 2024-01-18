@@ -55,6 +55,9 @@ dependencies:
   moment:
     specifier: ^2.29.4
     version: 2.29.4
+  monaco-editor:
+    specifier: ^0.45.0
+    version: 0.45.0
   nprogress:
     specifier: ^0.2.0
     version: 0.2.0
@@ -5113,6 +5116,10 @@ packages:
 
   /moment@2.29.4:
     resolution: {integrity: sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==}
+    dev: false
+
+  /monaco-editor@0.45.0:
+    resolution: {integrity: sha512-mjv1G1ZzfEE3k9HZN0dQ2olMdwIfaeAAjFiwNprLfYNRSz7ctv9XuCT7gPtBGrMUeV1/iZzYKj17Khu1hxoHOA==}
     dev: false
 
   /mrmime@1.0.1:

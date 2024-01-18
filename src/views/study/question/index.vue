@@ -10,7 +10,13 @@
       >
     </div>
     <el-table :data="filterTableData" style="width: 100%">
-      <el-table-column label="Name" prop="username" />
+      <el-table-column label="Keyword">
+        <template #default="scope">
+          <div style="display: flex; align-items: center">
+            <span>{{ scope.row.hints[0].split(":")[1] }}</span>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column align="right">
         <template #header>
           <el-input v-model="search" size="small" placeholder="Search Name" />
@@ -22,18 +28,35 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'User Edit' : 'User Add'" width="30%">
-      <el-form v-show="opearationType === 'add'" :model="addForm" label-width="120px">
-        <el-form-item label="User name">
-          <el-input v-model="addForm.content" />
+    <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'Question Edit' : 'Question Add'" width="60%">
+      <el-form v-show="opearationType === 'add'" :model="addForm" label-width="180px">
+        <el-form-item label="Content">
+          <el-input v-model="addForm.content" autosize type="textarea" />
         </el-form-item>
-        <el-form-item label="User password">
-          <el-input v-model="addForm.correntAnswer" />
+        <el-form-item label="Hints">
+          <div class="w-full flex mt-10px" v-for="(hint, index) in addForm.hints" :key="index">
+            <el-input v-model="addForm.hints[index]" autosize type="textarea"></el-input>
+            <el-button class="ml-10px" @click="removeHint(addForm.hints, index)" type="danger" :icon="Delete"></el-button>
+          </div>
+          <el-button class="w-full mt-10px" @click="addHints(addForm.hints)" type="primary" :icon="Plus">Add Hint</el-button>
+        </el-form-item>
+        <el-form-item label="correctAnswer">
+          <el-input v-model="addForm.correctAnswer" autosize type="textarea" />
         </el-form-item>
       </el-form>
       <el-form v-show="opearationType === 'edit'" :model="editForm" label-width="120px">
-        <el-form-item label="User name">
-          <el-input v-model="editForm.content" />
+        <el-form-item label="Content">
+          <el-input v-model="editForm.content" autosize type="textarea" />
+        </el-form-item>
+        <el-form-item label="Hints">
+          <div class="w-full flex mt-10px" v-for="(hint, index) in editForm.hints" :key="index">
+            <el-input v-model="editForm.hints[index]" autosize type="textarea"></el-input>
+            <el-button class="ml-10px" @click="removeHint(editForm.hints, index)" type="danger" :icon="Delete"></el-button>
+          </div>
+          <el-button class="w-full mt-10px" @click="addHints(editForm.hints)" type="primary" :icon="Plus">Add Hint</el-button>
+        </el-form-item>
+        <el-form-item label="correctAnswer">
+          <el-input v-model="editForm.correctAnswer" autosize type="textarea" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -50,6 +73,7 @@
 import { Question } from "@/api/interface/question";
 import { deleteQuestion, getQuestionList, createQuestion, updateQuestion } from "@/api/modules/question";
 import { computed, onMounted, reactive, ref } from "vue";
+import { Plus, Delete } from "@element-plus/icons-vue";
 
 const questions = ref<Array<Question.Entity>>([]);
 
@@ -67,9 +91,9 @@ let addForm = reactive<Question.Entity>({
   id: "",
   content: "",
   options: [],
-  correntAnswer: "",
+  correctAnswer: "",
   difficulty: 0,
-  hints: [],
+  hints: [""],
   created_at: new Date(),
   updated_at: new Date()
 });
@@ -78,9 +102,9 @@ let editForm = reactive<Question.Entity>({
   id: "",
   content: "",
   options: [],
-  correntAnswer: "",
+  correctAnswer: "",
   difficulty: 0,
-  hints: [],
+  hints: [""],
   created_at: new Date(),
   updated_at: new Date()
 });
@@ -96,16 +120,26 @@ const handleEdit = (index: number, row: Question.Entity) => {
   opearationType.value = "edit";
 };
 
+const addHints = (arr: string[]) => {
+  arr.push("");
+};
+
+function removeHint(arr: string[], index: number) {
+  arr.splice(index, 1);
+}
+
 async function submit() {
   if (opearationType.value === "edit") {
-    await updateQuestion(editForm);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { options, difficulty, created_at, updated_at, ...editFormReal } = editForm;
+    await updateQuestion(editFormReal);
     editForm = {
       id: "",
       content: "",
-      options: [],
-      correntAnswer: "",
+      options: [""],
+      correctAnswer: "",
       difficulty: 0,
-      hints: [],
+      hints: [""],
       created_at: new Date(),
       updated_at: new Date()
     };
@@ -114,10 +148,10 @@ async function submit() {
     addForm = {
       id: "",
       content: "",
-      options: [],
-      correntAnswer: "",
+      options: [""],
+      correctAnswer: "",
       difficulty: 0,
-      hints: [],
+      hints: [""],
       created_at: new Date(),
       updated_at: new Date()
     };

@@ -4,7 +4,7 @@ export declare namespace Question {
     id: string;
     content: string;
     options: string[];
-    correntAnswer: string;
+    correctAnswer: string;
     difficulty: number;
     hints: string[];
     created_at: Date;

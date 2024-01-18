@@ -53,6 +53,7 @@
     "laf-client-sdk": "1.0.0-beta.7",
     "mitt": "^3.0.0",
     "moment": "^2.29.4",
+    "monaco-editor": "^0.45.0",
     "nprogress": "^0.2.0",
     "passport": "^0.6.0",
     "passport-local": "^1.0.0",
