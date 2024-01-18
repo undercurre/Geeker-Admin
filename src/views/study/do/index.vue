@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-#fff">
+  <div class="bg-#fff w-full min-h-full">
     <p class="leading-30px text-20px px-10px pt-20px">今日必做</p>
     <div class="w-full flex justify-between items-center p-10px">
       <el-button type="primary" @click="handleAdd"
@@ -9,34 +9,36 @@
         ><el-icon><RefreshRight /></el-icon>刷新表格</el-button
       >
     </div>
-    <el-table :data="filterTableData" style="width: 20%">
-      <el-table-column label="Keyword">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ scope.row.hints[0].split(":")[1] }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="right">
-        <template #header>
-          <el-input v-model="search" size="small" placeholder="Search Name" />
-        </template>
-        <template #default="scope">
-          <el-button size="small" @click="handle2Do(scope.$index, scope.row)">Do</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="flex w-full h-full">
+      <el-table :data="filterTableData" style="width: 20%">
+        <el-table-column label="Keyword">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span>{{ scope.row.hints[0].split(":")[1] }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="right">
+          <template #header>
+            <el-input v-model="search" size="small" placeholder="Search Name" />
+          </template>
+          <template #default="scope">
+            <el-button size="small" @click="handle2Do(scope.$index, scope.row)">Do</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <div>
-      <monacoEditor
-        v-model="value"
-        :language="language"
-        :hight-change="hightChange"
-        :read-only="false"
-        width="100%"
-        height="100%"
-        @editor-mounted="editorMounted"
-      />
+      <div class="w-full">
+        <monacoEditor
+          v-model="value"
+          :language="language"
+          :hight-change="hightChange"
+          :read-only="false"
+          width="70%"
+          height="100%"
+          @editor-mounted="editorMounted"
+        />
+      </div>
     </div>
   </div>
 </template>
