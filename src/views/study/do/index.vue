@@ -29,6 +29,15 @@
       </el-table>
 
       <div class="w-full">
+        <p class="mb-10px">
+          <span class="text-20px">Content：</span><span class="text-16px">{{ doingItem.content }}</span>
+        </p>
+
+        <div v-show="!doingHints.length">
+          <span class="block text-20px">Hints：</span>
+          <p class="indent-16" v-for="item in doingHints" :key="item">{{ item }}</p>
+        </div>
+
         <monacoEditor
           v-model="value"
           :language="language"
@@ -65,6 +74,28 @@ const doingId = ref("");
 const filterTableData = computed(() =>
   questions.value.filter(data => !search.value || data.content.toLowerCase().includes(search.value.toLowerCase()))
 );
+
+const doingItem = computed(() => {
+  const temp = questions.value.find(item => item.id === doingId.value);
+  return temp
+    ? temp
+    : {
+        id: "",
+        content: "内容缺失",
+        options: [""],
+        correctAnswer: "",
+        difficulty: 10,
+        hints: [""],
+        created_at: new Date(),
+        updated_at: new Date()
+      };
+});
+
+const doingHints = computed(() => {
+  const temp = questions.value.find(item => item.id === doingId.value);
+
+  return temp ? temp.hints.filter(item => !item.includes("Title") && !item.includes("Code")) : ["数据缺失"];
+});
 
 const handleAdd = () => {
   // 增加题目
