@@ -171,7 +171,7 @@ export default defineComponent({
 .codeEditBox {
   flex: 1;
   width: 100%;
-  min-height: 100px;
+  min-height: 600px;
 
   // height: 200px;
   overflow-y: auto;

@@ -33,13 +33,23 @@
           <span class="text-20px">Content：</span><span class="text-16px">{{ doingItem.content }}</span>
         </p>
 
-        <div v-show="!doingHints.length">
+        <div v-show="doingHints.length">
           <span class="block text-20px">Hints：</span>
           <p class="indent-16" v-for="item in doingHints" :key="item">{{ item }}</p>
         </div>
+        <div class="w-full flex">
+          <div class="w-1/2">
+            <p class="indent-2">提示区：</p>
+            <iframe :srcdoc="doingCode" class="w-full h-500px" frameborder="0"></iframe>
+          </div>
+          <div class="w-1/2">
+            <p class="indent-2">预览区：</p>
+            <iframe :srcdoc="previewCode" class="w-full h-500px" frameborder="0"></iframe>
+          </div>
+        </div>
 
         <monacoEditor
-          v-model="value"
+          v-model="previewCode"
           :language="language"
           :hight-change="hightChange"
           :read-only="false"
@@ -55,12 +65,12 @@
 <script lang="ts" setup>
 import { Question } from "@/api/interface/question";
 import { getQuestionList } from "@/api/modules/question";
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import monacoEditor from "@/components/CodeEditBox/index.vue";
+const language = ref("html");
 
-const value = ref("-- select * from infrastructure;");
-const language = ref("sql");
-const hightChange = ref<any>(false);
+const hightChange = ref<boolean>(false);
+
 const editorMounted = (editor: any) => {
   console.log("editor实例加载完成", editor);
 };
@@ -94,7 +104,115 @@ const doingItem = computed(() => {
 const doingHints = computed(() => {
   const temp = questions.value.find(item => item.id === doingId.value);
 
-  return temp ? temp.hints.filter(item => !item.includes("Title") && !item.includes("Code")) : ["数据缺失"];
+  return temp
+    ? temp.hints.filter(item => !item.includes("Title") && !item.includes("Code") && !item.includes("Preview"))
+    : ["数据缺失"];
+});
+
+const doingCode = computed(() => {
+  const temp = questions.value.find(item => item.id === doingId.value);
+  if (!temp)
+    return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Center Demo</title>
+    <style>
+      .parent {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        border: 1px solid #ccc;
+      }
+      .content {
+        background-color: red;
+        padding: 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="content">
+        <h1>Error!</h1>
+      </div>
+    </div>
+  </body>
+</html>
+`;
+  const code = temp.hints.find(item => item.includes("Code"));
+  if (code) {
+    console.log(code.split("Code:")[1]);
+    return code.split("Code:")[1];
+  } else
+    return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Center Demo</title>
+    <style>
+      .parent {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        border: 1px solid #ccc;
+      }
+      .content {
+        background-color: red;
+        padding: 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="content">
+        <h1>Error!</h1>
+      </div>
+    </div>
+  </body>
+</html>
+`;
+});
+
+const previewCode = ref(`<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grid Center Demo</title>
+    <style>
+      .parent {
+        display: grid;
+        place-items: center;
+        height: 100vh;
+        border: 1px solid #ccc;
+      }
+      .content {
+        background-color: orange;
+        padding: 20px;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="parent">
+      <div class="content">
+        <h1>Null!</h1>
+      </div>
+    </div>
+  </body>
+</html>
+`);
+
+watch(doingId, newVal => {
+  const temp = questions.value.find(item => item.id === newVal);
+  if (temp) {
+    const preview = temp.hints.find(item => item.includes("Preview"));
+    if (preview) previewCode.value = preview.split("Preview:")[1];
+  }
 });
 
 const handleAdd = () => {
