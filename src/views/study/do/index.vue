@@ -6,8 +6,8 @@
         ><el-icon><Plus /></el-icon>加码</el-button
       >
       <el-button type="primary" @click="refreshMethod"
-        ><el-icon><RefreshRight /></el-icon>刷新表格</el-button
-      >
+        ><el-icon><RefreshRight /></el-icon>刷新Questions
+      </el-button>
     </div>
     <div class="flex w-full h-full">
       <el-table :data="filterTableData" style="width: 20%">
@@ -57,6 +57,11 @@
           height="100%"
           @editor-mounted="editorMounted"
         />
+
+        <div class="w-full flex justify-center h-4em">
+          <el-button type="warning" @click="abandonMethod">放弃</el-button>
+          <el-button type="primary" @click="submitMethod">提交</el-button>
+        </div>
       </div>
     </div>
   </div>
@@ -67,6 +72,9 @@ import { Question } from "@/api/interface/question";
 import { getQuestionList } from "@/api/modules/question";
 import { computed, onMounted, ref, watch } from "vue";
 import monacoEditor from "@/components/CodeEditBox/index.vue";
+import { diffChars, Change } from "diff";
+import { createRecord } from "@/api/modules/userquestionrecord";
+import { UserQuestionRecord } from "@/api/interface/userquestionrecord";
 const language = ref("html");
 
 const hightChange = ref<boolean>(false);
@@ -213,6 +221,7 @@ watch(doingId, newVal => {
     const preview = temp.hints.find(item => item.includes("Preview"));
     if (preview) previewCode.value = preview.split("Preview:")[1];
   }
+  console.log("换题", previewCode.value);
 });
 
 const handleAdd = () => {
@@ -223,18 +232,89 @@ const handle2Do = (index: number, row: Question.Entity) => {
   doingId.value = row.id;
 };
 
-// async function submit() {
-//   refreshMethod();
-// }
+async function submitMethod() {
+  const { score } = sumRecordScore(doingCode.value, previewCode.value);
+  const newRecord: UserQuestionRecord.CreateParams = {
+    questionId: "c6f06a7f-28fb-4f82-a86b-b285b4ac4c1a",
+    userAnswer: "Berlin",
+    isCorrect: 1,
+    score,
+    startTime: new Date(),
+    endTime: new Date()
+  };
+  await createRecord(newRecord);
+  nextQuestion();
+}
+
+// 对比答案并计分
+function sumRecordScore(
+  str1: string,
+  str2: string
+): {
+  diffResult: string;
+  score: number;
+} {
+  let tempScore = 100;
+  const differences: Change[] = diffChars(str1, str2);
+
+  // 获取差异部分
+  const diffResult: string = differences
+    .map(change => {
+      if (change.added) {
+        tempScore -= 10;
+        return `+${change.value}`;
+      } else if (change.removed) {
+        tempScore -= 10;
+        return `-${change.value}`;
+      } else {
+        tempScore -= 10;
+        return ` ${change.value}`;
+      }
+    })
+    .join("");
+
+  if (tempScore < 0) tempScore = 0;
+
+  return {
+    diffResult,
+    score: tempScore
+  };
+}
 
 const refreshMethod = async () => {
   const res = await getQuestionList();
   questions.value = res.data;
 };
 
+const abandonMethod = async () => {
+  nextQuestion();
+};
+
+function nextQuestion() {
+  doingId.value = getRandomUUID(
+    questions.value.map(item => item.id),
+    doingId.value
+  );
+}
+
 onMounted(() => {
   refreshMethod();
 });
+
+function getRandomUUID(uuidArray: string[], curId: string): string {
+  // 检查数组是否为空
+  if (uuidArray.length === 0) {
+    return curId;
+  }
+
+  const uuidArrayOut = uuidArray.filter(item => item !== curId);
+
+  // 生成一个随机索引
+  const randomIndex = Math.floor(Math.random() * uuidArrayOut.length);
+
+  // 返回随机的 UUID
+  return uuidArrayOut[randomIndex];
+}
 </script>
 
 <style scoped>
