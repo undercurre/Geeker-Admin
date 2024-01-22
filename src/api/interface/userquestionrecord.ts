@@ -9,7 +9,7 @@ export declare namespace UserQuestionRecord {
     score: number;
     startTime: Date;
     endTime: Date;
-    updated_at: Date;
+    created_at: Date;
   };
 
   type CreateParams = Partial<Entity>;

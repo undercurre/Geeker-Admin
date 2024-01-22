@@ -14,5 +14,5 @@ export const createRecord = (record: UserQuestionRecord.CreateParams) => {
 // 获取个人回答记录
 
 export const queryRecord = () => {
-  return http.get(PORT1 + "/userquestionrecords/getByUserId");
+  return http.get<Array<UserQuestionRecord.Entity>>(PORT1 + "/userquestionrecords/getByUserId");
 };

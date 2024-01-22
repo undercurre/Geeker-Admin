@@ -168,6 +168,7 @@ const refreshMethod = async () => {
     due_date: searchDate.value
   });
   tasks.value = res.data;
+  console.log(tasks.value);
   await nextTick();
   taskTable.value?.sort("updated_at", "ascending");
 };

@@ -12,7 +12,6 @@ export const getTaskListByUser = (conditions?: Partial<Task.Entity>) => {
     const query = Object.keys(conditions)
       .map(item => `${item}=${(conditions as Record<string, number | string>)[item]}`)
       .join("&");
-    console.log(query);
     return http.get<Array<Task.Entity>>(PORT1 + `/tasks/findByUserId?${query}`);
   } else {
     return http.get<Array<Task.Entity>>(PORT1 + `/tasks/findByUserId`);
