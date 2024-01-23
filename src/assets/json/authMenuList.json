@@ -49,7 +49,7 @@
       "component": "/activity/index",
       "meta": {
         "icon": "Clock",
-        "title": "活动管理",
+        "title": "提醒管理",
         "isLink": "",
         "isHide": false,
         "isFull": false,
