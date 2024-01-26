@@ -72,6 +72,20 @@
       }
     },
     {
+      "path": "/consumManager",
+      "name": "consumManager",
+      "component": "/consum/index",
+      "meta": {
+        "icon": "Money",
+        "title": "消费管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
       "path": "/exerciseManager",
       "name": "exerciseManager",
       "component": "/exercise/index",
