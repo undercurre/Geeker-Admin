@@ -1,10 +1,11 @@
 export namespace Image {
-  export interface ResImagesForUser {
+  export interface Entity {
     id: number;
     name: string;
     description: string;
-    upload_time: string;
-    user_id: number;
+    created_at: string;
+    updated_at: string;
+    userId: number;
     image_url: string;
   }
 }

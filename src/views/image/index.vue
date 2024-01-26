@@ -75,6 +75,7 @@ import { useUserStore } from "@/stores/modules/user";
 import { ElMessage, UploadUserFile, genFileId } from "element-plus";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 import { uploadImage } from "@/api/modules/image";
+import { Image } from "@/api/interface/image";
 
 const userStore = useUserStore();
 
@@ -90,34 +91,11 @@ const form = reactive<{
   file: null
 });
 
-const images = ref<
-  Array<{
-    id: number;
-    name: string;
-    description: string;
-    upload_time: string;
-    user_id: number;
-    image_url: string;
-  }>
->([]);
+const images = ref<Array<Image.Entity>>([]);
 const showModal = ref(false);
-const selectedImage = ref<{
-  id: number;
-  name: string;
-  description: string;
-  upload_time: string;
-  user_id: number;
-  image_url: string;
-}>();
+const selectedImage = ref<Image.Entity>();
 
-function showImage(image: {
-  id: number;
-  name: string;
-  description: string;
-  upload_time: string;
-  user_id: number;
-  image_url: string;
-}) {
+function showImage(image: Image.Entity) {
   selectedImage.value = image;
   showModal.value = true;
 }
@@ -132,7 +110,6 @@ const uploadDialogVisible = ref(false);
 const handleUpload = async () => {
   const formData = new FormData();
   formData.append("name", form.name);
-  formData.append("user_id", form.user_id.toString());
   formData.append("description", form.description);
   formData.append("file", form.file as Blob);
   const res = await uploadImage(formData);
@@ -178,7 +155,7 @@ const handlePictureCardPreview: UploadProps["onPreview"] = uploadFile => {
 };
 
 async function getData() {
-  const { data } = await getImageForUser({ id: userStore.userInfo.id });
+  const { data } = await getImageForUser();
   images.value = data;
 }
 
