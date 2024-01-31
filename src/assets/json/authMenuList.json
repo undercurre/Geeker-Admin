@@ -86,6 +86,20 @@
       }
     },
     {
+      "path": "/delivery",
+      "name": "delivery",
+      "component": "/delivery/index",
+      "meta": {
+        "icon": "ShoppingTrolley",
+        "title": "快递管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
       "path": "/exerciseManager",
       "name": "exerciseManager",
       "component": "/exercise/index",
