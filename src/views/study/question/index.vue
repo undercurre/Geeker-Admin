@@ -87,8 +87,7 @@ const filterTableData = computed(() =>
   questions.value.filter(data => !search.value || data.content.toLowerCase().includes(search.value.toLowerCase()))
 );
 
-let addForm = reactive<Question.Entity>({
-  id: "",
+let addForm = reactive<Omit<Question.Entity, "id">>({
   content: "",
   options: [],
   correctAnswer: "",
@@ -146,7 +145,6 @@ async function submit() {
   } else {
     await createQuestion(addForm);
     addForm = {
-      id: "",
       content: "",
       options: [""],
       correctAnswer: "",

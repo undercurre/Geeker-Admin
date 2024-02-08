@@ -100,6 +100,20 @@
       }
     },
     {
+      "path": "/project",
+      "name": "project",
+      "component": "/project/index",
+      "meta": {
+        "icon": "Suitcase",
+        "title": "项目管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      }
+    },
+    {
       "path": "/exerciseManager",
       "name": "exerciseManager",
       "component": "/exercise/index",

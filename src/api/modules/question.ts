@@ -21,6 +21,6 @@ export const updateQuestion = (question: Partial<Question.Entity>) => {
   });
 };
 
-export const createQuestion = (question: Question.Entity) => {
-  return http.post(PORT1 + "/questions/", question);
+export const createQuestion = (question: Omit<Question.Entity, "id">) => {
+  return http.post(PORT1 + "/questions", question);
 };
