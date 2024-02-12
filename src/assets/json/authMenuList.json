@@ -44,6 +44,78 @@
       }
     },
     {
+      "path": "/study",
+      "name": "study",
+      "redirect": "/study/question",
+      "meta": {
+        "icon": "List",
+        "title": "学习管理",
+        "isLink": "",
+        "isHide": false,
+        "isFull": false,
+        "isAffix": false,
+        "isKeepAlive": true
+      },
+      "children": [
+        {
+          "path": "/study/question",
+          "name": "question",
+          "component": "/study/question/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "题目管理",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/study/do",
+          "name": "do",
+          "component": "/study/do/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "勤劳做题",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/study/record",
+          "name": "record",
+          "component": "/study/record/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "做题记录",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        },
+        {
+          "path": "/study/analysis",
+          "name": "analysis",
+          "component": "/study/analysis/index",
+          "meta": {
+            "icon": "Menu",
+            "title": "做题分析",
+            "isLink": "",
+            "isHide": false,
+            "isFull": false,
+            "isAffix": false,
+            "isKeepAlive": true
+          }
+        }
+      ]
+    },
+    {
       "path": "/activityManager",
       "name": "activityManager",
       "component": "/activity/index",
@@ -182,78 +254,6 @@
         "isAffix": false,
         "isKeepAlive": true
       }
-    },
-    {
-      "path": "/study",
-      "name": "study",
-      "redirect": "/study/question",
-      "meta": {
-        "icon": "List",
-        "title": "学习管理",
-        "isLink": "",
-        "isHide": false,
-        "isFull": false,
-        "isAffix": false,
-        "isKeepAlive": true
-      },
-      "children": [
-        {
-          "path": "/study/question",
-          "name": "question",
-          "component": "/study/question/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "题目管理",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/study/do",
-          "name": "do",
-          "component": "/study/do/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "勤劳做题",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/study/record",
-          "name": "record",
-          "component": "/study/record/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "做题记录",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        },
-        {
-          "path": "/study/analysis",
-          "name": "analysis",
-          "component": "/study/analysis/index",
-          "meta": {
-            "icon": "Menu",
-            "title": "做题分析",
-            "isLink": "",
-            "isHide": false,
-            "isFull": false,
-            "isAffix": false,
-            "isKeepAlive": true
-          }
-        }
-      ]
     }
   ],
   "msg": "成功"

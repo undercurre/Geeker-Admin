@@ -16,3 +16,9 @@ export const createRecord = (record: UserQuestionRecord.CreateParams) => {
 export const queryRecord = () => {
   return http.get<Array<UserQuestionRecord.Entity>>(PORT1 + "/userquestionrecords/getByUserId");
 };
+
+// 修改回答的对错定义
+export const updateRecord = (record: UserQuestionRecord.UpdateParams) => {
+  const { id, ...fixObj } = record;
+  return http.put<Array<UserQuestionRecord.Entity>>(PORT1 + `/userquestionrecords/${id}`, fixObj);
+};

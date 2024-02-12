@@ -33,11 +33,11 @@
           <span class="text-20px">Content：</span><span class="text-16px">{{ doingItem.content }}</span>
         </p>
 
-        <div v-show="doingHints.length">
+        <div v-show="doingHints.length && !markdownDisplay">
           <span class="block text-20px">Hints：</span>
           <p class="indent-16" v-for="item in doingHints" :key="item">{{ item }}</p>
         </div>
-        <div class="w-full flex">
+        <div class="w-full flex" v-if="previewDisplay">
           <div class="w-1/2">
             <p class="indent-2">提示区：</p>
             <iframe :srcdoc="doingCode" class="w-full h-500px" frameborder="0"></iframe>
@@ -47,6 +47,7 @@
             <iframe :srcdoc="previewCode" class="w-full h-500px" frameborder="0"></iframe>
           </div>
         </div>
+        <div ref="markdownRef" class="markdown" v-html="markdownContent"></div>
 
         <monacoEditor
           v-model="previewCode"
@@ -70,11 +71,14 @@
 <script lang="ts" setup>
 import { Question } from "@/api/interface/question";
 import { getQuestionList } from "@/api/modules/question";
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, nextTick, onMounted, ref, watch } from "vue";
 import monacoEditor from "@/components/CodeEditBox/index.vue";
 import { diffChars, Change } from "diff";
 import { createRecord } from "@/api/modules/userquestionrecord";
 import { UserQuestionRecord } from "@/api/interface/userquestionrecord";
+import MarkdownIt from "markdown-it";
+import hljs from "highlight.js";
+import "highlight.js/styles/vs2015.css";
 const language = ref("html");
 
 const hightChange = ref<boolean>(false);
@@ -88,6 +92,10 @@ const questions = ref<Array<Question.Entity>>([]);
 const search = ref("");
 
 const doingId = ref("");
+
+const markdownContent = ref("");
+
+const markdownRef = ref<HTMLElement | null>(null);
 
 const filterTableData = computed(() =>
   questions.value.filter(data => !search.value || data.content.toLowerCase().includes(search.value.toLowerCase()))
@@ -215,13 +223,75 @@ const previewCode = ref(`<!DOCTYPE html>
 </html>
 `);
 
-watch(doingId, newVal => {
-  const temp = questions.value.find(item => item.id === newVal);
+const previewDisplay = computed(() => {
+  const temp = questions.value.find(item => item.id === doingId.value);
   if (temp) {
     const preview = temp.hints.find(item => item.includes("Preview"));
-    if (preview) previewCode.value = preview.split("Preview:")[1];
+    return preview;
+  } else {
+    return null;
   }
-  console.log("换题", previewCode.value);
+});
+
+const markdownDisplay = computed(() => {
+  const temp = questions.value.find(item => item.id === doingId.value);
+  if (temp) {
+    const preview = temp.hints.find(item => item.includes("Markdown:"));
+    return preview;
+  } else {
+    return null;
+  }
+});
+
+function applyStyles() {
+  if (markdownRef.value) {
+    const paragraphs = markdownRef.value.querySelectorAll("p");
+    paragraphs.forEach(p => {
+      p.style.paddingTop = "10px"; // 设置 padding 样式
+      p.style.paddingBottom = "10px";
+    });
+    const h2s = markdownRef.value.querySelectorAll("h2");
+    h2s.forEach(h2 => {
+      h2.style.color = "#000080"; // 设置 h2 样式
+      h2.style.fontSize = "30px";
+      h2.style.fontWeight = "bold";
+    });
+    const codes = markdownRef.value.querySelectorAll("code");
+    codes.forEach(code => {
+      code.style.color = "#fff"; // 设置 code 样式
+      code.style.backgroundColor = "#333";
+    });
+    const pres = markdownRef.value.querySelectorAll("pre");
+    pres.forEach(pre => {
+      pre.style.color = "#fff"; // 设置 pre 样式
+      pre.style.backgroundColor = "#333";
+    });
+  }
+}
+
+watch(doingId, () => {
+  if (previewDisplay.value) {
+    previewCode.value = previewDisplay.value.split("Preview:")[1];
+  }
+  if (markdownDisplay.value) {
+    const md = new MarkdownIt({
+      html: true,
+      breaks: true,
+      highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+          try {
+            return '<pre class="hljs"><code>' + hljs.highlight(lang, str).value + "</code></pre>";
+          } catch (__) {}
+        }
+        return ""; // 使用自动检测的默认语言
+      }
+    });
+    markdownContent.value = md.render(markdownDisplay.value.split("Markdown:")[1]);
+    console.log(markdownContent.value);
+    nextTick(() => {
+      applyStyles();
+    });
+  }
 });
 
 const handleAdd = () => {
@@ -233,11 +303,19 @@ const handle2Do = (index: number, row: Question.Entity) => {
 };
 
 async function submitMethod() {
-  const { score } = sumRecordScore(doingCode.value, previewCode.value);
+  let score = 0;
+  if (previewDisplay.value) {
+    const sum = sumRecordScore(doingCode.value, previewCode.value);
+    score = sum.score;
+  }
+  if (markdownDisplay.value) {
+    const sum = sumRecordScore(doingItem.value.correctAnswer, previewCode.value);
+    score = sum.score;
+  }
   const newRecord: UserQuestionRecord.CreateParams = {
-    questionId: "c6f06a7f-28fb-4f82-a86b-b285b4ac4c1a",
-    userAnswer: "Berlin",
-    isCorrect: 1,
+    questionId: doingItem.value.id,
+    userAnswer: previewCode.value,
+    isCorrect: score > 90,
     score,
     startTime: new Date(),
     endTime: new Date()
@@ -256,24 +334,30 @@ function sumRecordScore(
 } {
   let tempScore = 100;
   const differences: Change[] = diffChars(str1, str2);
+  let diffResult: string;
 
-  // 获取差异部分
-  const diffResult: string = differences
-    .map(change => {
-      if (change.added) {
-        tempScore -= 10;
-        return `+${change.value}`;
-      } else if (change.removed) {
-        tempScore -= 10;
-        return `-${change.value}`;
-      } else {
-        tempScore -= 10;
-        return ` ${change.value}`;
-      }
-    })
-    .join("");
+  if (str1 === str2) {
+    diffResult = str1;
+    tempScore = 100;
+  } else {
+    // 获取差异部分
+    diffResult = differences
+      .map(change => {
+        if (change.added) {
+          tempScore -= 10;
+          return `+${change.value}`;
+        } else if (change.removed) {
+          tempScore -= 10;
+          return `-${change.value}`;
+        } else {
+          tempScore -= 10;
+          return ` ${change.value}`;
+        }
+      })
+      .join("");
 
-  if (tempScore < 0) tempScore = 0;
+    if (tempScore < 0) tempScore = 0;
+  }
 
   return {
     diffResult,
@@ -317,8 +401,13 @@ function getRandomUUID(uuidArray: string[], curId: string): string {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "highlight.js/styles/default.css";
 .dialog-footer button:first-child {
   margin-right: 10px;
+}
+.hljs {
+  padding: 10px; /* 设置 padding */
+  background-color: gray; /* 设置与 Markdown 一样的背景色 */
 }
 </style>

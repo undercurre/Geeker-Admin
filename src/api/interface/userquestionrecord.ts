@@ -5,7 +5,7 @@ export declare namespace UserQuestionRecord {
     userId: string;
     questionId: string;
     userAnswer: string;
-    isCorrect: 0 | 1;
+    isCorrect: boolean;
     score: number;
     startTime: Date;
     endTime: Date;
@@ -13,4 +13,6 @@ export declare namespace UserQuestionRecord {
   };
 
   type CreateParams = Partial<Entity>;
+
+  type UpdateParams = Pick<Entity, "id"> & Partial<Pick<Entity, "userAnswer" | "score" | "isCorrect">>;
 }

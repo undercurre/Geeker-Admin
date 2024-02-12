@@ -14,7 +14,7 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="Question">
+      <el-table-column label="Question" :filters="questionFilter()" :filter-method="questionFilterHandler">
         <template #default="scope">
           <div style="display: flex; align-items: center">
             <span>{{ getQuestionName(scope.row.questionId) }}</span>
@@ -28,17 +28,67 @@
           </div>
         </template>
       </el-table-column>
+      <el-table-column label="isCorrect">
+        <template #default="scope">
+          <div style="display: flex; align-items: center" @click.capture="updateRecordSwitchTouch(scope.$index, scope.row)">
+            <el-switch
+              v-model="scope.row.isCorrect"
+              class="ml-2"
+              style="
+
+--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+              @change="updateRecordSwitch"
+            />
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column align="right">
+        <template #default="scope">
+          <el-button size="small" @click="openDetail(scope.$index, scope.row)">Detail</el-button>
+        </template>
+      </el-table-column>
     </el-table>
+    <el-dialog v-model="dialogVisible" title="回答详情" width="60%">
+      <el-input v-model="detail.userAnswer" autosize type="textarea" disabled />
+    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import moment from "moment";
 import { onMounted, ref } from "vue";
-import { queryRecord } from "@/api/modules/userquestionrecord";
+import { queryRecord, updateRecord } from "@/api/modules/userquestionrecord";
 import { UserQuestionRecord } from "@/api/interface/userquestionrecord";
 import { Question } from "@/api/interface/question";
 import { getQuestionList } from "@/api/modules/question";
+
+const dialogVisible = ref(false);
+
+const detail = ref<UserQuestionRecord.Entity>({
+  id: "",
+  userId: "",
+  questionId: "",
+  userAnswer: "",
+  isCorrect: false,
+  score: 0,
+  startTime: new Date(),
+  endTime: new Date(),
+  created_at: new Date()
+});
+
+const openDetail = (index: number, row: UserQuestionRecord.Entity) => {
+  dialogVisible.value = true;
+  detail.value = row;
+};
+
+const updateRecordSwitchTouch = (index: number, row: UserQuestionRecord.Entity) => {
+  detail.value = row;
+  console.log(row.id);
+};
+
+const updateRecordSwitch = (val: boolean | string | number) => {
+  updateRecord({ id: detail.value.id, isCorrect: val ? true : false });
+};
 
 const questions = ref<Array<Question.Entity>>([]);
 
@@ -46,7 +96,7 @@ const records = ref<Array<UserQuestionRecord.Entity>>([]);
 
 const refreshMethod = async () => {
   const res = await queryRecord();
-  records.value = res.data;
+  records.value = res.data.reverse();
   const questionRes = await getQuestionList();
   questions.value = questionRes.data;
 };
@@ -57,9 +107,25 @@ function formatTime(time: string) {
 
 function getQuestionName(id: string) {
   const cur = questions.value.find(item => item.id === id);
-  if (cur) return cur.hints[0].split(":")[1];
+  if (cur) return cur.content;
   else return "未知";
 }
+
+function questionFilter() {
+  const set = new Set(records.value.map(item => item.questionId));
+  const sort = [...set];
+
+  return sort.map(item => {
+    return {
+      text: getQuestionName(item),
+      value: item
+    };
+  });
+}
+
+const questionFilterHandler = (value: string, row: UserQuestionRecord.Entity) => {
+  return row.questionId === value;
+};
 
 onMounted(() => {
   refreshMethod();
