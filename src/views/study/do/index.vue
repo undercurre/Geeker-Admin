@@ -1,68 +1,74 @@
 <template>
-  <div class="bg-#fff w-full min-h-full">
-    <p class="leading-30px text-20px px-10px pt-20px">今日必做</p>
-    <div class="w-full flex justify-between items-center p-10px">
-      <el-button type="primary" @click="handleAdd"
-        ><el-icon><Plus /></el-icon>加码</el-button
-      >
-      <el-button type="primary" @click="refreshMethod"
-        ><el-icon><RefreshRight /></el-icon>刷新Questions
-      </el-button>
+  <div class="bg-#fff w-full h-full box-border flex flex-col">
+    <div>
+      <p class="leading-30px text-20px h-50px px-10px pt-20px box-border">今日必做</p>
+      <div class="w-full h-60px flex justify-between items-center px-10px box-border">
+        <el-button type="primary" @click="handleAdd"
+          ><el-icon><Plus /></el-icon>加码</el-button
+        >
+        <el-button type="primary" @click="refreshMethod"
+          ><el-icon><RefreshRight /></el-icon>刷新Questions
+        </el-button>
+      </div>
     </div>
-    <div class="flex w-full h-full">
-      <el-table :data="filterTableData" style="width: 20%">
-        <el-table-column label="Keyword">
-          <template #default="scope">
-            <div style="display: flex; align-items: center">
-              <span>{{ scope.row.hints[0].split(":")[1] }}</span>
+    <div class="bg-#fff w-full flex-1 box-border flex">
+      <div class="w-20% h-74vh bg-red overflow-hidden">
+        <el-table :data="filterTableData" height="100%">
+          <el-table-column label="Keyword">
+            <template #default="scope">
+              <div style="display: flex; align-items: center">
+                <span>{{ scope.row.hints[0].split(":")[1] }}</span>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column align="right">
+            <template #header>
+              <el-input v-model="search" size="small" placeholder="Search Name" />
+            </template>
+            <template #default="scope">
+              <el-button size="small" @click="handle2Do(scope.$index, scope.row)">Do</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+      <div class="flex flex-1">
+        <div class="pl-20px flex-1 box-border" v-if="doingId">
+          <p class="mb-10px">
+            <span class="text-20px">Content：</span><span class="text-16px">{{ doingItem.content }}</span>
+          </p>
+
+          <div v-show="doingHints.length && !markdownDisplay">
+            <span class="block text-20px">Hints：</span>
+            <p class="indent-16" v-for="item in doingHints" :key="item">{{ item }}</p>
+          </div>
+          <div class="w-full flex" v-if="previewDisplay">
+            <div class="w-1/2">
+              <p class="indent-2">提示区：</p>
+              <iframe :srcdoc="doingCode" class="w-full h-500px" frameborder="0"></iframe>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column align="right">
-          <template #header>
-            <el-input v-model="search" size="small" placeholder="Search Name" />
-          </template>
-          <template #default="scope">
-            <el-button size="small" @click="handle2Do(scope.$index, scope.row)">Do</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <div class="w-full">
-        <p class="mb-10px">
-          <span class="text-20px">Content：</span><span class="text-16px">{{ doingItem.content }}</span>
-        </p>
-
-        <div v-show="doingHints.length && !markdownDisplay">
-          <span class="block text-20px">Hints：</span>
-          <p class="indent-16" v-for="item in doingHints" :key="item">{{ item }}</p>
-        </div>
-        <div class="w-full flex" v-if="previewDisplay">
-          <div class="w-1/2">
-            <p class="indent-2">提示区：</p>
-            <iframe :srcdoc="doingCode" class="w-full h-500px" frameborder="0"></iframe>
+            <div class="w-1/2">
+              <p class="indent-2">预览区：</p>
+              <iframe :srcdoc="previewCode" class="w-full h-500px" frameborder="0"></iframe>
+            </div>
           </div>
-          <div class="w-1/2">
-            <p class="indent-2">预览区：</p>
-            <iframe :srcdoc="previewCode" class="w-full h-500px" frameborder="0"></iframe>
+          <div ref="markdownRef" class="markdown" v-html="markdownContent"></div>
+
+          <monacoEditor
+            v-model="previewCode"
+            :language="language"
+            :hight-change="hightChange"
+            :read-only="false"
+            width="70%"
+            height="100%"
+            @editor-mounted="editorMounted"
+          />
+
+          <div class="w-full flex justify-center h-4em">
+            <el-button type="warning" @click="abandonMethod">放弃</el-button>
+            <el-button type="primary" @click="submitMethod">提交</el-button>
           </div>
         </div>
-        <div ref="markdownRef" class="markdown" v-html="markdownContent"></div>
-
-        <monacoEditor
-          v-model="previewCode"
-          :language="language"
-          :hight-change="hightChange"
-          :read-only="false"
-          width="70%"
-          height="100%"
-          @editor-mounted="editorMounted"
-        />
-
-        <div class="w-full flex justify-center h-4em">
-          <el-button type="warning" @click="abandonMethod">放弃</el-button>
-          <el-button type="primary" @click="submitMethod">提交</el-button>
-        </div>
+        <div v-else class="grid place-items-center w-full h-full">暂未选题</div>
       </div>
     </div>
   </div>
@@ -89,13 +95,13 @@ const editorMounted = (editor: any) => {
 
 const questions = ref<Array<Question.Entity>>([]);
 
-const search = ref("");
-
 const doingId = ref("");
 
 const markdownContent = ref("");
 
 const markdownRef = ref<HTMLElement | null>(null);
+
+const search = ref("");
 
 const filterTableData = computed(() =>
   questions.value.filter(data => !search.value || data.content.toLowerCase().includes(search.value.toLowerCase()))
@@ -321,6 +327,7 @@ async function submitMethod() {
     endTime: new Date()
   };
   await createRecord(newRecord);
+  previewCode.value = "";
   nextQuestion();
 }
 
@@ -350,7 +357,6 @@ function sumRecordScore(
           tempScore -= 10;
           return `-${change.value}`;
         } else {
-          tempScore -= 10;
           return ` ${change.value}`;
         }
       })

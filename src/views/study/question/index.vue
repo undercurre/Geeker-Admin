@@ -9,24 +9,26 @@
         ><el-icon><RefreshRight /></el-icon>刷新表格</el-button
       >
     </div>
-    <el-table :data="filterTableData" style="width: 100%">
-      <el-table-column label="Keyword">
-        <template #default="scope">
-          <div style="display: flex; align-items: center">
-            <span>{{ scope.row.hints[0].split(":")[1] }}</span>
-          </div>
-        </template>
-      </el-table-column>
-      <el-table-column align="right">
-        <template #header>
-          <el-input v-model="search" size="small" placeholder="Search Name" />
-        </template>
-        <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div class="h-76vh">
+      <el-table :data="filterTableData" style="width: 100%" height="100%">
+        <el-table-column label="Keyword">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span>{{ scope.row.hints[0].split(":")[1] }}</span>
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column align="right">
+          <template #header>
+            <el-input v-model="search" size="small" placeholder="Search Name" />
+          </template>
+          <template #default="scope">
+            <el-button size="small" @click="handleEdit(scope.$index, scope.row)">Edit</el-button>
+            <el-button size="small" type="danger" @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
 
     <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'Question Edit' : 'Question Add'" width="60%">
       <el-form v-show="opearationType === 'add'" :model="addForm" label-width="180px">
@@ -132,7 +134,7 @@ async function submit() {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { options, difficulty, created_at, updated_at, ...editFormReal } = editForm;
     await updateQuestion(editFormReal);
-    editForm = {
+    editForm = reactive({
       id: "",
       content: "",
       options: [""],
@@ -141,10 +143,10 @@ async function submit() {
       hints: [""],
       created_at: new Date(),
       updated_at: new Date()
-    };
+    });
   } else {
     await createQuestion(addForm);
-    addForm = {
+    addForm = reactive({
       content: "",
       options: [""],
       correctAnswer: "",
@@ -152,7 +154,7 @@ async function submit() {
       hints: [""],
       created_at: new Date(),
       updated_at: new Date()
-    };
+    });
   }
   dialogVisible.value = false;
   refreshMethod();
