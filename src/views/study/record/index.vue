@@ -50,8 +50,8 @@
         </el-table-column>
       </el-table>
     </div>
-    <el-dialog v-model="dialogVisible" title="回答详情" width="60%">
-      <div v-html="diffHTML"></div>
+    <el-dialog v-model="dialogVisible" title="回答详情" width="80%">
+      <div v-html="diffHTML" class="diff"></div>
     </el-dialog>
   </div>
 </template>
@@ -143,20 +143,20 @@ watchEffect(() => {
     const diffResult = differences
       .map(change => {
         if (change.added) {
-          return `**+${change.value}`;
+          return `<code>+${change.value}</code>`;
         } else if (change.removed) {
-          return `**-${change.value}`;
+          return `<a>-${change.value}</a>`;
         } else {
           return ` ${change.value}`;
         }
       })
       .join("")
-      .replace(/ /g, "&nbsp;");
+      .replace(/ /g, "&nbsp;")
+      .replace(/<code>(.*?)<\/code>/g, '<code><span style="color: green;">$1</span></code>')
+      .replace(/<a>(.*?)<\/a>/g, '<a><span style="color: red;">$1</span></a>');
     const lines = diffResult.split("\n");
     lines.map(item => {
-      if (item.includes("**+")) diffHTML.value += "<p style='background-color: lightgreen;'>" + item + "</p>";
-      if (item.includes("**-")) diffHTML.value += "<p style='background-color: pink;'>" + item + "</p>";
-      if (!item.includes("**+") && !item.includes("**-")) diffHTML.value += "<p>" + item + "</p>";
+      diffHTML.value += "<p style='font-size: 20px'>" + item + "</p>";
     });
   }
 });
