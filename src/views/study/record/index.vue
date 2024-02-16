@@ -35,9 +35,8 @@
               <el-switch
                 v-model="scope.row.isCorrect"
                 class="ml-2"
-                style="
-
---el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
                 @change="updateRecordSwitch"
               />
             </div>
