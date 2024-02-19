@@ -8,6 +8,13 @@
     </div>
     <div class="h-80vh">
       <el-table :data="records" style="width: 100%" height="100%">
+        <el-table-column label="Index">
+          <template #default="scope">
+            <div style="display: flex; align-items: center">
+              <span>{{ scope.$index }}</span>
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column label="Time">
           <template #default="scope">
             <div style="display: flex; align-items: center">
@@ -29,7 +36,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="isCorrect">
+        <el-table-column label="isCorrect" :filters="isCorrectFilter()" :filter-method="isCorrectFilterHandler">
           <template #default="scope">
             <div style="display: flex; align-items: center" @click.capture="updateRecordSwitchTouch(scope.$index, scope.row)">
               <el-switch
@@ -126,8 +133,25 @@ function questionFilter() {
   });
 }
 
+function isCorrectFilter() {
+  return [
+    {
+      text: "正确",
+      value: true
+    },
+    {
+      text: "错误",
+      value: false
+    }
+  ];
+}
+
 const questionFilterHandler = (value: string, row: UserQuestionRecord.Entity) => {
   return row.questionId === value;
+};
+
+const isCorrectFilterHandler = (value: boolean, row: UserQuestionRecord.Entity) => {
+  return row.isCorrect === value;
 };
 
 onMounted(() => {
