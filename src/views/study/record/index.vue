@@ -11,7 +11,7 @@
         <el-table-column label="Index">
           <template #default="scope">
             <div style="display: flex; align-items: center">
-              <span>{{ scope.$index }}</span>
+              <span>{{ scope.$index + 1 }}</span>
             </div>
           </template>
         </el-table-column>
