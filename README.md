@@ -1,8 +1,8 @@
-# OrganizeMe
+# Busy
 
 ### 介绍 📖
 
-OrganizeMe 一款基于 Vue3.2、TypeScript、Vite4、Pinia、Element-Plus 开源的后台管理框架，使用目前最新技术栈开发。项目提供强大的 [ProTable](https://juejin.cn/post/7166068828202336263) 组件，在一定程度上节省您的开发效率。另外本项目还封装了一些常用组件、Hooks、指令、动态路由、按钮级别权限控制等功能。
+Busy 一款基于 Vue3.2、TypeScript、Vite4、Pinia、Element-Plus 开源的后台管理框架，使用目前最新技术栈开发。项目提供强大的 [ProTable](https://juejin.cn/post/7166068828202336263) 组件，在一定程度上节省您的开发效率。另外本项目还封装了一些常用组件、Hooks、指令、动态路由、按钮级别权限控制等功能。
 
 ### 在线预览 👀
 
@@ -10,8 +10,8 @@ OrganizeMe 一款基于 Vue3.2、TypeScript、Vite4、Pinia、Element-Plus 开�
 
 ### 代码仓库 ⭐
 
-- Gitee：https://gitee.com/HalseySpicy/OrganizeMe
-- GitHub：https://github.com/HalseySpicy/OrganizeMe
+- Gitee：https://gitee.com/HalseySpicy/Busy
+- GitHub：https://github.com/HalseySpicy/Busy
 
 ### 项目文档 📚
 
@@ -39,9 +39,9 @@ OrganizeMe 一款基于 Vue3.2、TypeScript、Vite4、Pinia、Element-Plus 开�
 
 ```text
 # Gitee
-git clone https://gitee.com/HalseySpicy/OrganizeMe.git
+git clone https://gitee.com/HalseySpicy/Busy.git
 # GitHub
-git clone https://github.com/HalseySpicy/OrganizeMe.git
+git clone https://github.com/HalseySpicy/Busy.git
 ```
 
 - **Install：**
@@ -121,7 +121,7 @@ pnpm commit
 ### 文件资源目录 📚
 
 ```text
-OrganizeMe
+Busy
 ├─ .husky                 # husky 配置文件
 ├─ .vscode                # VSCode 推荐配置
 ├─ build                  # Vite 配置项
