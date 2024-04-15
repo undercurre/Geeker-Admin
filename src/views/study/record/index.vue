@@ -137,11 +137,11 @@ function isCorrectFilter() {
   return [
     {
       text: "正确",
-      value: true
+      value: "true"
     },
     {
       text: "错误",
-      value: false
+      value: "false"
     }
   ];
 }
