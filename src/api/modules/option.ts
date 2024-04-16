@@ -24,91 +24,45 @@ export interface OptionData {
   attributes: OptionAttributes;
 }
 
-interface QuestionAttributes {
-  qid: string | null;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  type: string;
-  options: { data: OptionData[] };
-}
-
-interface QuestionData {
-  id: number;
-  attributes: QuestionAttributes;
-}
-
-interface QuestionnaireAttributes {
-  qid: string | null;
-  name: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  questions: {
-    data: QuestionData[];
-  };
-}
-
-export interface QuestionnaireData {
-  id: number;
-  attributes: QuestionnaireAttributes;
-}
-
-interface QuestionnaireResponse {
-  data: QuestionnaireData[];
+export interface OptionsResponce {
+  data: OptionData[];
   meta: Meta;
 }
 
-interface QuestionnaireOneResponse {
-  data: QuestionnaireData;
-  meta: object;
+export interface OptionOneResponce {
+  data: OptionData;
+  meta: Meta;
 }
 
-interface CreateQuestionnaireParams {
-  name: string;
-  questions: number[];
-}
-
-type UpdateQuestionParams = Partial<CreateQuestionnaireParams>;
-
-export async function getQuestionnaires() {
+export async function getOptions() {
   // return data
-  return await http.post<QuestionnaireResponse>(PORT1 + "/questionnaire/penetrate", {
-    url: "/api/questionnaires?pagination[limit]=40&populate[questions][populate][0]=options",
+  return await http.post<OptionsResponce>(PORT1 + "/questionnaire/penetrate", {
+    url: "/api/options",
     method: "GET"
   });
 }
 
-export async function getOneQuestionnaires(id: number) {
+export async function delOption(id: number) {
   // return data
-  return await http.post<QuestionnaireOneResponse>(PORT1 + "/questionnaire/penetrate", {
-    url: `/api/questionnaires/${id}?populate[questions][populate][0]=options`,
-    method: "GET"
-  });
-}
-
-export async function delQuestionnaires(id: number) {
-  // return data
-  return await http.post<QuestionnaireOneResponse>(PORT1 + "/questionnaire/penetrate", {
-    url: `/api/questionnaires/${id}`,
+  return await http.post<OptionOneResponce>(PORT1 + "/questionnaire/penetrate", {
+    url: `/api/options/${id}`,
     method: "DELETE"
   });
 }
 
-export async function updateQuestionnaires(id: number, data: UpdateQuestionParams) {
+export async function updateOption(id: number, data: any) {
   // return data
-  return await http.post<QuestionnaireOneResponse>(PORT1 + "/questionnaire/penetrate", {
-    url: `/api/questionnaires/${id}`,
+  return await http.post<OptionOneResponce>(PORT1 + "/questionnaire/penetrate", {
+    url: `/api/options/${id}`,
     method: "PUT",
     data
   });
 }
 
-export async function createQuestionnaires(data: CreateQuestionnaireParams) {
+export async function createOption(data: any) {
   // return data
-  return await http.post<QuestionnaireOneResponse>(PORT1 + "/questionnaire/penetrate", {
-    url: `/api/questionnaires`,
+  return await http.post<OptionOneResponce>(PORT1 + "/questionnaire/penetrate", {
+    url: `/api/options`,
     method: "POST",
     data
   });

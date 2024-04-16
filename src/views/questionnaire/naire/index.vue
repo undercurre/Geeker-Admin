@@ -39,10 +39,34 @@
         <el-form-item label="Questionnaires Name">
           <el-input v-model="editForm.name" />
         </el-form-item>
+        <el-form-item label="Questionnaires Questions">
+          <el-transfer
+            v-model="editForm.questions"
+            :data="questions"
+            :props="{
+              key: 'id'
+            }"
+            :render-content="renderFunc as any"
+            :titles="['Source', 'Target']"
+            :button-texts="['Cancel', 'Select']"
+          />
+        </el-form-item>
       </el-form>
       <el-form v-show="opearationType === 'add'" :model="addForm" label-width="240px">
         <el-form-item label="Questionnaires Name">
           <el-input v-model="addForm.name" />
+        </el-form-item>
+        <el-form-item label="Questionnaires Questions">
+          <el-transfer
+            v-model="addForm.questions"
+            :data="questions"
+            :props="{
+              key: 'id'
+            }"
+            :render-content="renderFunc as any"
+            :titles="['Source', 'Target']"
+            :button-texts="['Cancel', 'Select']"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -65,9 +89,11 @@ import {
   QuestionnaireData,
   updateQuestionnaires
 } from "@/api/modules/questionnaire";
-import { computed, nextTick, onMounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, reactive, ref, VNode, VNodeProps } from "vue";
+import { getQuestions, QuestionData } from "@/api/modules/naireQuestion";
 
 const questionnaires = ref<Array<QuestionnaireData>>([]);
+const questions = ref<Array<QuestionData>>([]);
 
 const questionnairesTable = ref<InstanceType<typeof ElTable> | null>(null);
 
@@ -86,6 +112,10 @@ const filterTableData = computed(() =>
 );
 
 type QuestionnaireForm = { name: string; questions: Array<number> };
+
+const renderFunc = (h: (type: string, props: VNodeProps | null, children?: string) => VNode, option: QuestionData) => {
+  return h("span", null, option.attributes.content);
+};
 
 let addForm = reactive<QuestionnaireForm>({
   name: "",
@@ -122,7 +152,7 @@ const handleEdit = (index: number, row: QuestionnaireData) => {
   editId = row.id;
   editForm = reactive({
     name: row.attributes.name,
-    questions: []
+    questions: row.attributes.questions.data.map(item => item.id)
   });
   console.log(index, row);
   opearationType.value = "edit";
@@ -145,8 +175,10 @@ const handleDelete = async (index: number, row: QuestionnaireData) => {
 };
 
 const refreshMethod = async () => {
-  const res = await getQuestionnaires();
-  questionnaires.value = res.data.data;
+  const nres = await getQuestionnaires();
+  questionnaires.value = nres.data.data;
+  const qres = await getQuestions();
+  questions.value = qres.data.data;
   console.log(questionnaires.value);
   await nextTick();
   questionnairesTable.value?.sort("updated_at", "ascending");

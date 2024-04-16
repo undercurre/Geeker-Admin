@@ -1,6 +1,6 @@
 <template>
   <div class="bg-#fff">
-    <p class="leading-30px text-20px px-10px pt-20px">问卷管理</p>
+    <p class="leading-30px text-20px px-10px pt-20px">问题管理</p>
     <div class="w-full flex justify-between items-center p-10px">
       <div>
         <el-button type="primary" @click="handleAdd"
@@ -17,7 +17,7 @@
       style="width: 100%"
       :default-sort="{ prop: 'updated_at', order: 'ascending' }"
     >
-      <el-table-column label="Name" prop="name" :formatter="nameFormatter" />
+      <el-table-column label="Name" prop="name" :formatter="contentFormatter" />
       <el-table-column label="Date" prop="date" sortable :formatter="timeFormatter" :sort-orders="['ascending']" />
       <el-table-column align="right">
         <template #header>
@@ -30,19 +30,49 @@
       </el-table-column>
     </el-table>
 
-    <el-dialog
-      v-model="dialogVisible"
-      :title="opearationType === 'edit' ? 'Questionnaire Edit' : 'Questionnaire Add'"
-      width="50%"
-    >
+    <el-dialog v-model="dialogVisible" :title="opearationType === 'edit' ? 'Question Edit' : 'Question Add'" width="70%">
       <el-form v-show="opearationType === 'edit'" :model="editForm" label-width="240px">
-        <el-form-item label="Questionnaires Name">
-          <el-input v-model="editForm.name" />
+        <el-form-item label="Question content">
+          <el-input v-model="editForm.content" />
+        </el-form-item>
+        <el-form-item label="Question type">
+          <el-select v-model="editForm.type" placeholder="Select" size="large" style="width: 240px">
+            <el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Question options" v-if="editForm.type !== 'fill'">
+          <el-transfer
+            v-model="editForm.options"
+            :data="options"
+            :render-content="renderFunc as any"
+            :props="{
+              key: 'id'
+            }"
+            :titles="['Source', 'Target']"
+            :button-texts="['Cancel', 'Select']"
+          />
         </el-form-item>
       </el-form>
       <el-form v-show="opearationType === 'add'" :model="addForm" label-width="240px">
-        <el-form-item label="Questionnaires Name">
-          <el-input v-model="addForm.name" />
+        <el-form-item label="Question content">
+          <el-input v-model="addForm.content" />
+        </el-form-item>
+        <el-form-item label="Question type">
+          <el-select v-model="addForm.type" placeholder="Select" size="large" style="width: 240px">
+            <el-option v-for="item in typeOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="Question options" v-if="addForm.type !== 'fill'">
+          <el-transfer
+            v-model="addForm.options"
+            :data="options"
+            :props="{
+              key: 'id'
+            }"
+            :render-content="renderFunc as any"
+            :titles="['Source', 'Target']"
+            :button-texts="['Cancel', 'Select']"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -58,18 +88,15 @@
 <script lang="ts" setup>
 import moment from "moment";
 import { ElTable } from "element-plus";
-import {
-  createQuestionnaires,
-  delQuestionnaires,
-  getQuestionnaires,
-  QuestionnaireData,
-  updateQuestionnaires
-} from "@/api/modules/questionnaire";
-import { computed, nextTick, onMounted, reactive, ref } from "vue";
+import { createQuestions, delQuestions, getQuestions, updateQuestions } from "@/api/modules/naireQuestion";
+import { VNode, VNodeProps, computed, nextTick, onMounted, reactive, ref } from "vue";
+import { QuestionData } from "@/api/modules/naireQuestion";
+import { OptionData, getOptions } from "@/api/modules/option";
 
-const questionnaires = ref<Array<QuestionnaireData>>([]);
+const questions = ref<Array<QuestionData>>([]);
+const options = ref<Array<OptionData>>([]);
 
-const questionnairesTable = ref<InstanceType<typeof ElTable> | null>(null);
+const questionsTable = ref<InstanceType<typeof ElTable> | null>(null);
 
 const opearationType = ref("add");
 
@@ -82,33 +109,43 @@ const searchDate = ref("");
 searchDate.value = moment(new Date()).format("YYYY-MM-DD");
 
 const filterTableData = computed(() =>
-  questionnaires.value.filter(data => !search.value || data.attributes.name.toLowerCase().includes(search.value.toLowerCase()))
+  questions.value.filter(data => !search.value || data.attributes.content.toLowerCase().includes(search.value.toLowerCase()))
 );
 
-type QuestionnaireForm = { name: string; questions: Array<number> };
+type QuestionForm = { content: string; type: "fill" | "single" | "multiple"; options: number[] };
 
-let addForm = reactive<QuestionnaireForm>({
-  name: "",
-  questions: []
+const typeOptions = ["fill", "single", "multiple"];
+
+const renderFunc = (h: (type: string, props: VNodeProps | null, children?: string) => VNode, option: OptionData) => {
+  return h("span", null, option.attributes.content);
+};
+
+let addForm = reactive<QuestionForm>({
+  content: "",
+  type: "fill",
+  options: []
 });
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 let editId: number = -1;
 
-let editForm = reactive<QuestionnaireForm>({
-  name: "",
-  questions: []
+let editForm = reactive<QuestionForm>({
+  content: "",
+  type: "fill",
+  options: []
 });
 
 const resetForm = () => {
-  addForm = reactive<QuestionnaireForm>({
-    name: "",
-    questions: []
+  addForm = reactive<QuestionForm>({
+    content: "",
+    type: "fill",
+    options: []
   });
 
-  editForm = reactive<QuestionnaireForm>({
-    name: "",
-    questions: []
+  editForm = reactive<QuestionForm>({
+    content: "",
+    type: "fill",
+    options: []
   });
 };
 
@@ -117,12 +154,13 @@ const handleAdd = () => {
   opearationType.value = "add";
 };
 
-const handleEdit = (index: number, row: QuestionnaireData) => {
+const handleEdit = (index: number, row: QuestionData) => {
   dialogVisible.value = true;
   editId = row.id;
   editForm = reactive({
-    name: row.attributes.name,
-    questions: []
+    content: row.attributes.content,
+    type: row.attributes.type,
+    options: row.attributes.options.data.map(item => item.id)
   });
   console.log(index, row);
   opearationType.value = "edit";
@@ -130,36 +168,38 @@ const handleEdit = (index: number, row: QuestionnaireData) => {
 
 async function submit() {
   if (opearationType.value === "edit") {
-    await updateQuestionnaires(editId, editForm);
+    await updateQuestions(editId, editForm);
   } else {
-    await createQuestionnaires(addForm);
+    await createQuestions(addForm);
   }
   resetForm();
   dialogVisible.value = false;
   refreshMethod();
 }
 
-const handleDelete = async (index: number, row: QuestionnaireData) => {
-  await delQuestionnaires(row.id);
+const handleDelete = async (index: number, row: QuestionData) => {
+  await delQuestions(row.id);
   refreshMethod();
 };
 
 const refreshMethod = async () => {
-  const res = await getQuestionnaires();
-  questionnaires.value = res.data.data;
-  console.log(questionnaires.value);
+  const qres = await getQuestions();
+  questions.value = qres.data.data;
+  const ores = await getOptions();
+  options.value = ores.data.data;
+  console.log(questions.value);
   await nextTick();
-  questionnairesTable.value?.sort("updated_at", "ascending");
+  questionsTable.value?.sort("updated_at", "ascending");
 };
 
-const timeFormatter = (row: QuestionnaireData) => {
+const timeFormatter = (row: QuestionData) => {
   // 获取当前年份
   const currentYear = moment().year();
   return moment(row.attributes.createdAt.slice(0, 10)).year(currentYear).format("YYYY-MM-DD");
 };
 
-const nameFormatter = (row: QuestionnaireData) => {
-  return row.attributes.name;
+const contentFormatter = (row: QuestionData) => {
+  return row.attributes.content;
 };
 
 onMounted(() => {
